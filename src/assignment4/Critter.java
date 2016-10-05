@@ -12,7 +12,12 @@
  */
 package assignment4;
 
+import java.awt.Point;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /* see the PDF for descriptions of the methods and fields in this class
  * you may add fields, methods or inner classes to Critter ONLY if you make your additions private
@@ -22,8 +27,9 @@ import java.util.List;
 
 public abstract class Critter {
 	private static String myPackage;
-	private	static List<Critter> population = new java.util.ArrayList<Critter>();
-	private static List<Critter> babies = new java.util.ArrayList<Critter>();
+	private	static List<Critter> population = new ArrayList<Critter>();
+	private static List<Critter> babies = new ArrayList<Critter>();
+	private static Map<Point, ArrayList<Critter>> map = new HashMap<Point, ArrayList<Critter>>();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -44,23 +50,67 @@ public abstract class Critter {
 	public String toString() { return ""; }
 	
 	private int energy = 0;
+	protected void setEnergy(int new_energy) { energy = new_energy; }
 	protected int getEnergy() { return energy; }
 	
 	private int x_coord;
 	private int y_coord;
-	
-	protected final void walk(int direction) {
+	private int lastMovedTimeStep = -1;
+	protected int getX_coord() { return x_coord; }
+	protected void setX_coord(int x_coord) { this.x_coord = x_coord; }
+	protected int getY_coord() { return y_coord; }
+	protected void setY_coord(int y_coord) { this.y_coord = y_coord; }
+	protected void setCoord(Point p){ this.x_coord = p.x; this.y_coord = p.y; }
+	protected Point getCoord(){	return new Point(x_coord, y_coord); }
+
+	private Point moveDirection(Point p, int direction, int step){
+		int w = Params.world_width;
+		int h = Params.world_height;
+		int x = p.x;
+		int y = p.y;
+		Point pn = new Point();
+		switch(direction) {
+		case 0:	pn.x = (x+step)%w; break;
+		case 1:	pn.x = (x+step)%w; pn.y = (y-step)%h; break;
+		case 2:	pn.y = (y-step)%h; break;
+		case 3:	pn.x = (x-step)%w; pn.y = (y-step)%h; break;
+		case 4:	pn.x = (x-step)%w; break;
+		case 5:	pn.x = (x-step)%w; pn.y = (y+step)%h; break;
+		case 6:	pn.y = (y+step)%h; break;
+		case 7:	pn.x = (x+step)%w; pn.y = (y+step)%h; break;
+		default: break;		
+		}
+		return pn;
 	}
-	
+	protected final void walk(int direction) {
+		if (lastMovedTimeStep < timeStep){
+			setCoord(moveDirection(getCoord(),direction,1));
+			lastMovedTimeStep = timeStep;
+		}
+		setEnergy(getEnergy()-Params.walk_energy_cost);
+	}	
 	protected final void run(int direction) {
-		
+		if (lastMovedTimeStep < timeStep){
+			setCoord(moveDirection(getCoord(),direction,2));
+			lastMovedTimeStep = timeStep;
+		}
+		setEnergy(getEnergy()-Params.run_energy_cost);
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
+		if (energy < Params.min_reproduce_energy)
+			return;
+		offspring.setCoord(moveDirection(getCoord(), direction, 1));
+		babies.add(offspring);
 	}
 
+	public static int timeStep = 0;
 	public abstract void doTimeStep();
 	public abstract boolean fight(String oponent);
+
+	protected void updateRestEnergy() {
+		setEnergy(getEnergy() - Params.rest_energy_cost);
+	};
 	
 	/**
 	 * create and initialize a Critter subclass.
@@ -73,6 +123,15 @@ public abstract class Critter {
 	 * @throws InvalidCritterException
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
+		try {
+			Critter new_critter = (Critter) Class.forName(critter_class_name).newInstance();
+			new_critter.setEnergy(Params.start_energy);
+			new_critter.setX_coord(getRandomInt(Params.world_width)); 
+			new_critter.setY_coord(getRandomInt(Params.world_height)); 
+		}
+		catch(Exception e){
+			throw new InvalidCritterException(critter_class_name);
+		}				
 	}
 	
 	/**
@@ -167,10 +226,107 @@ public abstract class Critter {
 	 * Clear the world of all critters, dead and alive
 	 */
 	public static void clearWorld() {
+		population = new ArrayList<Critter>();
+		babies = new ArrayList<Critter>();
+		map = new HashMap<Point, ArrayList<Critter>>();
+		timeStep = 0;		
 	}
 	
 	public static void worldTimeStep() {
+		timeStep++;
+
+		for (Critter c: population){
+			c.doTimeStep();
+		}
+
+		map.clear();
+        for (int i = 0; i < population.size(); i++){
+        	Critter c = population.get(i);
+        	if (map.containsKey(c.getCoord())){
+				map.get(c.getCoord()).add(0, c);
+        	}
+        	else {
+        		ArrayList<Critter> l = new ArrayList<Critter>();
+        		l.add(c);
+        		map.put(c.getCoord(), l);
+        	}
+        }
+        
+        for (Point p : map.keySet()){
+			ArrayList<Critter> mapPop = map.get(p);
+			if (mapPop.size() > 1) {
+				for (int i = 0; i < mapPop.size(); i++) {
+					Critter c1 = mapPop.get(i);
+					Critter c2 = mapPop.get(i + 1);
+					boolean f1 = c1.fight(c2.toString());
+					boolean f2 = c2.fight(c1.toString());
+					if (c1.getEnergy() <= 0 || c2.getEnergy() <= 0) {
+						continue;
+					}
+					int r1 = f1 ? getRandomInt(c1.getEnergy()) : 0;
+					int r2 = f2 ? getRandomInt(c2.getEnergy()) : 0;
+					if (r1 > r2) {
+						c1.setEnergy(c1.getEnergy() + c2.getEnergy() / 2);
+						c2.setEnergy(0);
+						mapPop.remove(i + 1);
+						population.remove(c2);
+					} else {
+						c2.setEnergy(c2.getEnergy() + c1.getEnergy() / 2);
+						c1.setEnergy(0);
+						mapPop.remove(i);
+						population.remove(c1);
+					}
+        		}
+        	}
+        }
+	
+        
+		for (int i = 0; i < population.size(); i++){
+			Critter c = population.get(i);
+			c.updateRestEnergy();
+			if (c.getEnergy() <= 0) {
+				population.remove(i);
+				i--;
+			}
+		}
+        
+        generateAlgae();
+
+		population.addAll(babies);
+		babies.clear();
 	}
 	
 	public static void displayWorld() {}
+
+	public static final void generateAlgae() {
+		for (int i = 0; i < Params.refresh_algae_count; i++) {
+			Algae a = new Algae();
+			a.setEnergy(Params.start_energy);
+			a.setCoord(new Point(getRandomInt(Params.world_width), getRandomInt(Params.world_height)));
+			population.add(a);
+		}
+	}
+
+	public static final void printWorld() {
+		PrintStream o = System.out;
+		o.print('+');
+		for (int i = 0; i < Params.world_width; i++)
+			o.print('-');
+		o.print('+');
+
+		for (int i = 0; i < Params.world_height; i++) {
+			o.print('|');
+			for (int j = 0; j < Params.world_width; i++)
+				if (map.containsKey(new Point(j, i)))
+					o.print(map.get(new Point(j, i)).get(0).toString());
+				else
+					o.print(' ');
+			o.print('|');
+		}
+
+		o.print('+');
+		for (int i = 0; i < Params.world_width; i++)
+			o.print('-');
+		o.print('+');
+	}
 }
