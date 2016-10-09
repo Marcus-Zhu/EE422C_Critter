@@ -50,7 +50,6 @@ public abstract class Critter {
 	public String toString() { return ""; }
 	
 	private int energy = 0;
-	protected void setEnergy(int new_energy) { energy = new_energy; }
 	protected int getEnergy() { return energy; }
 	
 	private int x_coord;
@@ -65,6 +64,13 @@ public abstract class Critter {
 	protected void setCoord(Point p){ this.x_coord = p.x; this.y_coord = p.y; }
 	protected Point getCoord(){	return new Point(x_coord, y_coord); }
 
+	/**
+	 * Calculate a world position by current position, direction and distance.
+	 * @param p Current position
+	 * @param direction [0, 8] , from right to right-down, ccw
+	 * @param step 1 for walk, 2 for run
+	 * @return result
+	 */
 	private Point calcDirection(Point p, int direction, int step) {
 		if (direction < 0 || direction > 8)
 			return (Point) p.clone();
@@ -77,6 +83,14 @@ public abstract class Critter {
 		return new Point(x, y);
 	}
 
+	/**
+	 * Move to the instructed position. Will return original if:
+	 * 	1. already moved in this timestep.
+	 * 	2. position already occupied during fight mode.
+	 * @param dir [0, 8] , from right to right-down, ccw
+	 * @param step 1 for walk, 2 for run
+	 * @return result
+	 */
 	private boolean moveDirection(int dir, int step) {
 		if (lastMovedTimeStep < timeStep){
 			Point dest = calcDirection(getCoord(), dir, step);
@@ -97,18 +111,31 @@ public abstract class Critter {
 		return false;
 	}
 
+	/**
+	 * Walk in direction for 1 step.
+	 * @param direction
+	 */
 	protected final void walk(int direction) {
 		moveDirection(direction, 1);
-		setEnergy(getEnergy()-Params.walk_energy_cost);
+		energy -= Params.walk_energy_cost;
 	}	
 
+	/**
+	 * Run in direction for 2 steps.
+	 * @param direction
+	 */
 	protected final void run(int direction) {
 		moveDirection(direction, 2);
-		setEnergy(getEnergy()-Params.run_energy_cost);
+		energy -= Params.run_energy_cost;
 	}
 	
+	/**
+	 * Concrete subclasses of Critter may invoke this function.
+	 * @param offspring
+	 * @param direction
+	 */
 	protected final void reproduce(Critter offspring, int direction) {
-		if (energy < Params.min_reproduce_energy)
+		if (this.energy < Params.min_reproduce_energy)
 			return;
 		offspring.setCoord(calcDirection(getCoord(), direction, 1));
 		babies.add(offspring);
@@ -118,8 +145,11 @@ public abstract class Critter {
 	public abstract void doTimeStep();
 	public abstract boolean fight(String oponent);
 
+	/**
+	 * Subtract rest energy from critter's energy. Called by WorldTimeStep().
+	 */
 	protected void updateRestEnergy() {
-		setEnergy(getEnergy() - Params.rest_energy_cost);
+		energy -= Params.rest_energy_cost;
 	};
 	
 	/**
@@ -129,13 +159,14 @@ public abstract class Critter {
 	 * (Java weirdness: Exception throwing does not work properly if the parameter has lower-case instead of
 	 * upper. For example, if craig is supplied instead of Craig, an error is thrown instead of
 	 * an Exception.)
-	 * @param critter_class_name
-	 * @throws InvalidCritterException
+	 * @param critter_class_name critter to be made
+	 * @throws InvalidCritterException exception
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
 		try {
-			Critter new_critter = (Critter) Class.forName("assignment4." + critter_class_name).newInstance();
-			new_critter.setEnergy(Params.start_energy);
+			System.out.println(myPackage);
+			Critter new_critter = (Critter) Class.forName(myPackage + '.' + critter_class_name).newInstance();
+			new_critter.energy = Params.start_energy;
 			new_critter.setX_coord(getRandomInt(Params.world_width)); 
 			new_critter.setY_coord(getRandomInt(Params.world_height));
 			population.add(new_critter);
@@ -151,13 +182,13 @@ public abstract class Critter {
 	 * Gets a list of critters of a specific type.
 	 * @param critter_class_name What kind of Critter is to be listed.  Unqualified class name.
 	 * @return List of Critters.
-	 * @throws InvalidCritterException
+	 * @throws InvalidCritterException exception
 	 */
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
 		List<Critter> result = new java.util.ArrayList<Critter>();
 		try {
 			for (Critter c : population) {
-				if (Class.forName("assignment4." + critter_class_name).isInstance(c))
+				if (Class.forName(myPackage + '.' + critter_class_name).isInstance(c))
 					result.add(c);
 			}
 		} catch (ClassNotFoundException e) {
@@ -202,45 +233,13 @@ public abstract class Critter {
 	 * so that they correctly update your grid/data structure.
 	 */
 	static abstract class TestCritter extends Critter {
-		protected void setEnergy(int new_energy_value) {
-			super.energy = new_energy_value;
-		}
-		
-		protected void setX_coord(int new_x_coord) {
-			super.x_coord = new_x_coord;
-		}
-		
-		protected void setY_coord(int new_y_coord) {
-			super.y_coord = new_y_coord;
-		}
-		
-		protected int getX_coord() {
-			return super.x_coord;
-		}
-		
-		protected int getY_coord() {
-			return super.y_coord;
-		}
-		
-
-		/*
-		 * This method getPopulation has to be modified by you if you are not using the population
-		 * ArrayList that has been provided in the starter code.  In any case, it has to be
-		 * implemented for grading tests to work.
-		 */
-		protected static List<Critter> getPopulation() {
-			return population;
-		}
-		
-		/*
-		 * This method getBabies has to be modified by you if you are not using the babies
-		 * ArrayList that has been provided in the starter code.  In any case, it has to be
-		 * implemented for grading tests to work.  Babies should be added to the general population 
-		 * at either the beginning OR the end of every timestep.
-		 */
-		protected static List<Critter> getBabies() {
-			return babies;
-		}
+		protected void setEnergy(int new_energy_value) { super.energy = new_energy_value; }
+		protected void setX_coord(int new_x_coord) { super.x_coord = new_x_coord; }
+		protected void setY_coord(int new_y_coord) { super.y_coord = new_y_coord; }
+		protected int getX_coord() { return super.x_coord; }
+		protected int getY_coord() { return super.y_coord; }
+		protected static List<Critter> getPopulation() { return population; }
+		protected static List<Critter> getBabies() { return babies;	}
 	}
 
 	/**
@@ -263,7 +262,7 @@ public abstract class Critter {
 			c.doTimeStep();
 		}
 
-		generateMap();
+		updateMap();
 
 		in_fight_mode = true;
         for (Point p : map.keySet()){
@@ -273,12 +272,12 @@ public abstract class Critter {
 				Critter c2 = mapPop.get(1);
 				boolean f1 = c1.fight(c2.toString());
 				boolean f2 = c2.fight(c1.toString());
-				if (c1.getEnergy() <= 0) {
+				if (c1.energy <= 0) {
 					mapPop.remove(0);
 					population.remove(c1);
 					continue;
 				}
-				if (c2.getEnergy() <= 0) {
+				if (c2.energy <= 0) {
 					mapPop.remove(1);
 					population.remove(c2);
 					continue;
@@ -287,16 +286,16 @@ public abstract class Critter {
 					System.out.print("Fight between: ");
 					System.out.println(c1.toString() + ' ' + c2.toString() + ' ' + c2.getCoord());
 				}
-				int r1 = f1 ? getRandomInt(c1.getEnergy()) : 0;
-				int r2 = f2 ? getRandomInt(c2.getEnergy()) : 0;
+				int r1 = f1 ? getRandomInt(c1.energy) : 0;
+				int r2 = f2 ? getRandomInt(c2.energy) : 0;
 				if (r1 > r2) {
-					c1.setEnergy(c1.getEnergy() + c2.getEnergy() / 2);
-					c2.setEnergy(0);
+					c1.energy += c2.energy / 2;
+					c2.energy = 0;
 					mapPop.remove(1);
 					population.remove(c2);
 				} else {
-					c2.setEnergy(c2.getEnergy() + c1.getEnergy() / 2);
-					c1.setEnergy(0);
+					c2.energy += c1.energy / 2;
+					c1.energy = 0;
 					mapPop.remove(0);
 					population.remove(c1);
 				}
@@ -307,19 +306,22 @@ public abstract class Critter {
 		for (int i = 0; i < population.size(); i++){
 			Critter c = population.get(i);
 			c.updateRestEnergy();
-			if (c.getEnergy() <= 0) {
+			if (c.energy <= 0) {
 				population.remove(i);
 				i--;
 			}
 		}
-        
+
         generateAlgae();
 
 		population.addAll(babies);
 		babies.clear();
 	}
 
-	private static void generateMap() {
+	/**
+	 * Update 2d map according to population
+	 */
+	private static void updateMap() {
 		map.clear();
 		for (int i = 0; i < population.size(); i++) {
 			Critter c = population.get(i);
@@ -337,13 +339,14 @@ public abstract class Critter {
 	 * world is also printed.
 	 */
 	public static void displayWorld() {
+		updateMap();
 		PrintStream o = System.out;
+		
 		o.print('+');
 		for (int i = 0; i < Params.world_width; i++)
 			o.print('-');
 		o.println('+');
 
-		generateMap();
 		for (int i = 0; i < Params.world_height; i++) {
 			o.print('|');
 			for (int j = 0; j < Params.world_width; j++)
@@ -367,6 +370,9 @@ public abstract class Critter {
 		o.println('+');
 	}
 
+	/**
+	 * Generate random positioned algaed of refresh_algae_count number.
+	 */
 	public static final void generateAlgae() {
 		for (int i = 0; i < Params.refresh_algae_count; i++) {
 			Algae a = new Algae();
