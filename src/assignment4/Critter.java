@@ -56,6 +56,8 @@ public abstract class Critter {
 	private int x_coord;
 	private int y_coord;
 	private int lastMovedTimeStep = -1;
+	private static boolean in_fight_mode = false;
+
 	protected int getX_coord() { return x_coord; }
 	protected void setX_coord(int x_coord) { this.x_coord = x_coord; }
 	protected int getY_coord() { return y_coord; }
@@ -63,32 +65,52 @@ public abstract class Critter {
 	protected void setCoord(Point p){ this.x_coord = p.x; this.y_coord = p.y; }
 	protected Point getCoord(){	return new Point(x_coord, y_coord); }
 
-	private Point moveDirection(Point p, int direction, int step){
+	private Point calcDirection(Point p, int direction, int step) {
+		if (direction < 0 || direction > 8)
+			return (Point) p.clone();
 		int[] x_dir = { 1, 1, 0, -1, -1, -1, 0, 1 };
 		int[] y_dir = { 0, -1, -1, -1, 0, 1, 1, 1 };
-		int x = (p.x + x_dir[direction]) % Params.world_width;
-		int y = (p.y + y_dir[direction]) % Params.world_height;
+		int x = (p.x + x_dir[direction] * step);
+		x = x > 0 ? x % Params.world_width : (x + Params.world_width) % Params.world_width;
+		int y = (p.y + y_dir[direction] * step);
+		y = y > 0 ? y % Params.world_height : (y + Params.world_height) % Params.world_height;
 		return new Point(x, y);
 	}
-	protected final void walk(int direction) {
+
+	private boolean moveDirection(int dir, int step) {
 		if (lastMovedTimeStep < timeStep){
-			setCoord(moveDirection(getCoord(),direction,1));
-			lastMovedTimeStep = timeStep;
+			Point dest = calcDirection(getCoord(), dir, step);
+			boolean pos_conflict = false;
+			if (in_fight_mode)
+				for (Critter c : population)
+					if (c.getCoord().equals(dest)) {
+						pos_conflict = true;
+						break;
+					}
+			if (!pos_conflict) {
+				setCoord(dest);
+				lastMovedTimeStep = timeStep;
+				return true;
+			}
 		}
+		System.out.println(getCoord());
+		return false;
+	}
+
+	protected final void walk(int direction) {
+		moveDirection(direction, 1);
 		setEnergy(getEnergy()-Params.walk_energy_cost);
 	}	
+
 	protected final void run(int direction) {
-		if (lastMovedTimeStep < timeStep){
-			setCoord(moveDirection(getCoord(),direction,2));
-			lastMovedTimeStep = timeStep;
-		}
+		moveDirection(direction, 2);
 		setEnergy(getEnergy()-Params.run_energy_cost);
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
 		if (energy < Params.min_reproduce_energy)
 			return;
-		offspring.setCoord(moveDirection(getCoord(), direction, 1));
+		offspring.setCoord(calcDirection(getCoord(), direction, 1));
 		babies.add(offspring);
 	}
 
@@ -231,6 +253,9 @@ public abstract class Critter {
 		timeStep = 0;		
 	}
 	
+	/**
+	 * The main loop for critter world. Excecuted for every timestep.
+	 */
 	public static void worldTimeStep() {
 		timeStep++;
 
@@ -238,19 +263,9 @@ public abstract class Critter {
 			c.doTimeStep();
 		}
 
-		map.clear();
-        for (int i = 0; i < population.size(); i++){
-        	Critter c = population.get(i);
-        	if (map.containsKey(c.getCoord())){
-				map.get(c.getCoord()).add(0, c);
-        	}
-        	else {
-        		ArrayList<Critter> l = new ArrayList<Critter>();
-        		l.add(c);
-        		map.put(c.getCoord(), l);
-        	}
-        }
+		generateMap();
 
+		in_fight_mode = true;
         for (Point p : map.keySet()){
 			ArrayList<Critter> mapPop = map.get(p);
 			while (mapPop.size() > 1) {
@@ -258,8 +273,19 @@ public abstract class Critter {
 				Critter c2 = mapPop.get(1);
 				boolean f1 = c1.fight(c2.toString());
 				boolean f2 = c2.fight(c1.toString());
-				if (c1.getEnergy() <= 0 || c2.getEnergy() <= 0) {
+				if (c1.getEnergy() <= 0) {
+					mapPop.remove(0);
+					population.remove(c1);
 					continue;
+				}
+				if (c2.getEnergy() <= 0) {
+					mapPop.remove(1);
+					population.remove(c2);
+					continue;
+				}
+				if (!(c1 instanceof Algae) || !(c2 instanceof Algae)) {
+					System.out.print("Fight between: ");
+					System.out.println(c1.toString() + ' ' + c2.toString() + ' ' + c2.getCoord());
 				}
 				int r1 = f1 ? getRandomInt(c1.getEnergy()) : 0;
 				int r2 = f2 ? getRandomInt(c2.getEnergy()) : 0;
@@ -276,6 +302,7 @@ public abstract class Critter {
 				}
     		}
 		}
+		in_fight_mode = false;
         
 		for (int i = 0; i < population.size(); i++){
 			Critter c = population.get(i);
@@ -292,6 +319,19 @@ public abstract class Critter {
 		babies.clear();
 	}
 
+	private static void generateMap() {
+		map.clear();
+		for (int i = 0; i < population.size(); i++) {
+			Critter c = population.get(i);
+			if (map.containsKey(c.getCoord())) {
+				map.get(c.getCoord()).add(0, c);
+			} else {
+				ArrayList<Critter> l = new ArrayList<Critter>();
+				l.add(c);
+				map.put(c.getCoord(), l);
+			}
+		}
+	}
 	/**
 	 * Print the critter world with each critter as a character. Border of the
 	 * world is also printed.
@@ -303,11 +343,19 @@ public abstract class Critter {
 			o.print('-');
 		o.println('+');
 
+		generateMap();
 		for (int i = 0; i < Params.world_height; i++) {
 			o.print('|');
 			for (int j = 0; j < Params.world_width; j++)
-				if (map.containsKey(new Point(j, i)))
-					o.print(map.get(new Point(j, i)).get(0).toString());
+				if (map.containsKey(new Point(j, i))) {
+					ArrayList<Critter> l = map.get(new Point(j, i));
+					// not let other critters covered by algae
+					int s = 0;
+					while (l.get(s) instanceof Algae && s < l.size() - 1)
+						s++;
+
+					o.print(l.get(s).toString());
+				}
 				else
 					o.print(' ');
 			o.println('|');

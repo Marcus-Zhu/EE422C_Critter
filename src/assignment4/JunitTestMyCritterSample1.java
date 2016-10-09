@@ -14,7 +14,7 @@ import org.junit.Test;
 import assignment4.Critter.TestCritter;
 public class JunitTestMyCritterSample1 {
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -33,7 +33,7 @@ public class JunitTestMyCritterSample1 {
 	public void tearDown() throws Exception {
 	}
 
-	@Test
+
 	/**
 	 * 1.
 	 * Use MakeCritter to create a Critter, and makes sure walk works for 1 step.
@@ -49,7 +49,7 @@ public class JunitTestMyCritterSample1 {
 		assertTrue(Math.abs(y1b - y1a) == 0);
 	}
 	
-	@Test
+
 	/**
 	 * 2. Should move only once even if walk is called twice in one turn. Width
 	 * and Height >= 3. This test does not use MakeCritter.
@@ -69,7 +69,7 @@ public class JunitTestMyCritterSample1 {
 		assertEquals(m2.getY_coord(), y - 1);
 	}
 	
-	@Test
+
 	/**
 	 * 3.
 	 * num Critters created at 1 location.  Call WorldTimeStep once.  Ensure that all but
@@ -98,5 +98,22 @@ public class JunitTestMyCritterSample1 {
 			Critter.displayWorld();
 		}
 		assertEquals(1, TestCritter.getInstances("MyCritter5").size());
+	}
+
+	@Test
+	public void testFightPos() throws InvalidCritterException {
+		Critter.clearWorld();
+		Critter.makeCritter("MyCritter2");
+		MyCritter2 c = (MyCritter2) Critter.TestCritter.getPopulation().get(0);
+		Point a = (Point) c.getCoord().clone();
+		for (int i = 0; i < 100; i++) {
+			Critter.worldTimeStep();
+			System.out.println(c.getCoord());
+			if (!a.equals(c.getCoord())) {
+				Critter.runStats(Critter.TestCritter.getPopulation());
+				Critter.displayWorld();
+				a = (Point) c.getCoord().clone();
+			}
+		}
 	}
 }
