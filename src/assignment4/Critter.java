@@ -64,23 +64,11 @@ public abstract class Critter {
 	protected Point getCoord(){	return new Point(x_coord, y_coord); }
 
 	private Point moveDirection(Point p, int direction, int step){
-		int w = Params.world_width;
-		int h = Params.world_height;
-		int x = p.x;
-		int y = p.y;
-		Point pn = new Point();
-		switch(direction) {
-		case 0:	pn.x = (x+step)%w; break;
-		case 1:	pn.x = (x+step)%w; pn.y = (y-step)%h; break;
-		case 2:	pn.y = (y-step)%h; break;
-		case 3:	pn.x = (x-step)%w; pn.y = (y-step)%h; break;
-		case 4:	pn.x = (x-step)%w; break;
-		case 5:	pn.x = (x-step)%w; pn.y = (y+step)%h; break;
-		case 6:	pn.y = (y+step)%h; break;
-		case 7:	pn.x = (x+step)%w; pn.y = (y+step)%h; break;
-		default: break;		
-		}
-		return pn;
+		int[] x_dir = { 1, 1, 0, -1, -1, -1, 0, 1 };
+		int[] y_dir = { 0, -1, -1, -1, 0, 1, 1, 1 };
+		int x = (p.x + x_dir[direction]) % Params.world_width;
+		int y = (p.y + y_dir[direction]) % Params.world_height;
+		return new Point(x, y);
 	}
 	protected final void walk(int direction) {
 		if (lastMovedTimeStep < timeStep){
@@ -124,14 +112,17 @@ public abstract class Critter {
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
 		try {
-			Critter new_critter = (Critter) Class.forName(critter_class_name).newInstance();
+			Critter new_critter = (Critter) Class.forName("assignment4." + critter_class_name).newInstance();
 			new_critter.setEnergy(Params.start_energy);
 			new_critter.setX_coord(getRandomInt(Params.world_width)); 
-			new_critter.setY_coord(getRandomInt(Params.world_height)); 
+			new_critter.setY_coord(getRandomInt(Params.world_height));
+			population.add(new_critter);
 		}
-		catch(Exception e){
+		catch (ClassNotFoundException e) {
 			throw new InvalidCritterException(critter_class_name);
-		}				
+		}
+		catch (Exception e) {
+		}
 	}
 	
 	/**
@@ -142,7 +133,15 @@ public abstract class Critter {
 	 */
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
 		List<Critter> result = new java.util.ArrayList<Critter>();
-	
+		try {
+			for (Critter c : population) {
+				if (Class.forName("assignment4." + critter_class_name).isInstance(c))
+					result.add(c);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new InvalidCritterException(critter_class_name);
+		}
 		return result;
 	}
 	
@@ -251,35 +250,32 @@ public abstract class Critter {
         		map.put(c.getCoord(), l);
         	}
         }
-        
+
         for (Point p : map.keySet()){
 			ArrayList<Critter> mapPop = map.get(p);
-			if (mapPop.size() > 1) {
-				for (int i = 0; i < mapPop.size(); i++) {
-					Critter c1 = mapPop.get(i);
-					Critter c2 = mapPop.get(i + 1);
-					boolean f1 = c1.fight(c2.toString());
-					boolean f2 = c2.fight(c1.toString());
-					if (c1.getEnergy() <= 0 || c2.getEnergy() <= 0) {
-						continue;
-					}
-					int r1 = f1 ? getRandomInt(c1.getEnergy()) : 0;
-					int r2 = f2 ? getRandomInt(c2.getEnergy()) : 0;
-					if (r1 > r2) {
-						c1.setEnergy(c1.getEnergy() + c2.getEnergy() / 2);
-						c2.setEnergy(0);
-						mapPop.remove(i + 1);
-						population.remove(c2);
-					} else {
-						c2.setEnergy(c2.getEnergy() + c1.getEnergy() / 2);
-						c1.setEnergy(0);
-						mapPop.remove(i);
-						population.remove(c1);
-					}
-        		}
-        	}
-        }
-	
+			while (mapPop.size() > 1) {
+				Critter c1 = mapPop.get(0);
+				Critter c2 = mapPop.get(1);
+				boolean f1 = c1.fight(c2.toString());
+				boolean f2 = c2.fight(c1.toString());
+				if (c1.getEnergy() <= 0 || c2.getEnergy() <= 0) {
+					continue;
+				}
+				int r1 = f1 ? getRandomInt(c1.getEnergy()) : 0;
+				int r2 = f2 ? getRandomInt(c2.getEnergy()) : 0;
+				if (r1 > r2) {
+					c1.setEnergy(c1.getEnergy() + c2.getEnergy() / 2);
+					c2.setEnergy(0);
+					mapPop.remove(1);
+					population.remove(c2);
+				} else {
+					c2.setEnergy(c2.getEnergy() + c1.getEnergy() / 2);
+					c1.setEnergy(0);
+					mapPop.remove(0);
+					population.remove(c1);
+				}
+    		}
+		}
         
 		for (int i = 0; i < population.size(); i++){
 			Critter c = population.get(i);
@@ -295,8 +291,33 @@ public abstract class Critter {
 		population.addAll(babies);
 		babies.clear();
 	}
-	
-	public static void displayWorld() {}
+
+	/**
+	 * Print the critter world with each critter as a character. Border of the
+	 * world is also printed.
+	 */
+	public static void displayWorld() {
+		PrintStream o = System.out;
+		o.print('+');
+		for (int i = 0; i < Params.world_width; i++)
+			o.print('-');
+		o.println('+');
+
+		for (int i = 0; i < Params.world_height; i++) {
+			o.print('|');
+			for (int j = 0; j < Params.world_width; j++)
+				if (map.containsKey(new Point(j, i)))
+					o.print(map.get(new Point(j, i)).get(0).toString());
+				else
+					o.print(' ');
+			o.println('|');
+		}
+
+		o.print('+');
+		for (int i = 0; i < Params.world_width; i++)
+			o.print('-');
+		o.println('+');
+	}
 
 	public static final void generateAlgae() {
 		for (int i = 0; i < Params.refresh_algae_count; i++) {
@@ -305,28 +326,5 @@ public abstract class Critter {
 			a.setCoord(new Point(getRandomInt(Params.world_width), getRandomInt(Params.world_height)));
 			population.add(a);
 		}
-	}
-
-	public static final void printWorld() {
-		PrintStream o = System.out;
-		o.print('+');
-		for (int i = 0; i < Params.world_width; i++)
-			o.print('-');
-		o.print('+');
-
-		for (int i = 0; i < Params.world_height; i++) {
-			o.print('|');
-			for (int j = 0; j < Params.world_width; i++)
-				if (map.containsKey(new Point(j, i)))
-					o.print(map.get(new Point(j, i)).get(0).toString());
-				else
-					o.print(' ');
-			o.print('|');
-		}
-
-		o.print('+');
-		for (int i = 0; i < Params.world_width; i++)
-			o.print('-');
-		o.print('+');
 	}
 }
