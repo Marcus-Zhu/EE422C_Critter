@@ -11,8 +11,10 @@
  * Fall 2016
  */
 package assignment4; // cannot be in default package
+import java.util.List;
 import java.util.Scanner;
 import java.io.*;
+import java.lang.reflect.Method;
 
 
 /*
@@ -95,21 +97,31 @@ public class Main {
 				if (input != null && input.length() > 0){
 					String[] words = input.split("\\s+");
 					if (words[0].equals("show")) {
-						Critter.displayWorld();
+						if (words.length == 1)
+							Critter.displayWorld();
+						else
+							System.out.println("error processing: " + input);
 					} 
 					else if (words[0].equals("step")) {
 						// expecting space betw "step" and number of steps
-						int steps = 1;
-						if (words.length > 1)
-							steps = Integer.parseInt(words[1]); 
-						for (int i = 0; i < steps; i++)
-							Critter.worldTimeStep();
+						if (words.length <= 2){
+							int steps = 1;
+							if (words.length > 1)
+								steps = Integer.parseInt(words[1]); 
+							for (int i = 0; i < steps; i++)
+								Critter.worldTimeStep();
+						}
+						else
+							System.out.println("error processing: " + input);
+						
 					}
 					else if (words[0].equals("seed")){
 						if (words.length > 1){
 							long seed = Integer.parseInt(words[1]);
 							Critter.setSeed(seed);
 						}
+						else
+							System.out.println("error processing: " + input);
 						
 					}
 					else if (words[0].equals("make")){
@@ -129,6 +141,22 @@ public class Main {
 									System.out.println("error processing: " + input);
 								}
 						}
+					}
+					else if (words[0].equals("stats")){
+						if (words.length > 1){
+							try{
+								String critName = words[1];
+								List <Critter> critList = Critter.getInstances(critName);
+								
+								Critter critter = (Critter) Class.forName(myPackage + '.' + critName).newInstance();
+								critter.runStats(critList);
+							}
+							catch(ClassNotFoundException|IllegalAccessException|InstantiationException|InvalidCritterException e){
+								System.out.println("error processing: " + input);
+								
+							}
+						}
+						
 					}
 					else{
 						System.out.println("invalid command: " + input);	
