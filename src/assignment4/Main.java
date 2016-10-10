@@ -69,8 +69,77 @@ public class Main {
         /* Do not alter the code above for your submission. */
         /* Write your code below. */
         
-        System.out.println("GLHF");
-        
+		//System.out.println("GLHF");
+        try {
+        	for (int a = 0; a < 100; a++)
+        		Critter.makeCritter("Algae");
+        	
+        	for (int a = 0; a < 25; a++)	
+        		Critter.makeCritter("Craig");
+		} catch (InvalidCritterException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Invalid Critter exception!");
+			//e.printStackTrace();
+		}
+		String input = "";
+		// loop until get a valid input
+		do {
+			System.out.print("critters>");
+			input = kb.nextLine().trim(); // get rid of leading/trailing spaces
+
+			/*if (input.equals("quit")) {
+				// let program execution "fall through" to end
+				System.out.println("Quitting");
+			} */
+			try{
+				if (input != null && input.length() > 0){
+					String[] words = input.split("\\s+");
+					if (words[0].equals("show")) {
+						Critter.displayWorld();
+					} 
+					else if (words[0].equals("step")) {
+						// expecting space betw "step" and number of steps
+						int steps = 1;
+						if (words.length > 1)
+							steps = Integer.parseInt(words[1]); 
+						for (int i = 0; i < steps; i++)
+							Critter.worldTimeStep();
+					}
+					else if (words[0].equals("seed")){
+						if (words.length > 1){
+							long seed = Integer.parseInt(words[1]);
+							Critter.setSeed(seed);
+						}
+						
+					}
+					else if (words[0].equals("make")){
+						if (words.length > 1){
+							String critName = words[1];
+							int numCrits = 1;
+							if (words.length > 2)
+								try{
+									numCrits = Integer.parseInt(words[2]);
+								
+									for (int k = 0; k < numCrits; k++)
+										Critter.makeCritter(critName);
+								} 
+								catch (InvalidCritterException | NumberFormatException e) {
+									// TODO Auto-generated catch block
+									//e.printStackTrace();
+									System.out.println("error processing: " + input);
+								}
+						}
+					}
+					else{
+						System.out.println("invalid command: " + input);	
+					}
+				}
+			}
+			catch(NumberFormatException e){
+				System.out.println("invalid command: " + input);
+			}
+
+		} while (!input.equals("quit"));
         /* Write your code above */
         System.out.flush();
 
