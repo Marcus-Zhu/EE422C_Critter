@@ -27,6 +27,7 @@ import java.util.Map;
 
 public abstract class Critter {
 	private static String myPackage;
+	private static boolean DEBUG = true;
 	private	static List<Critter> population = new ArrayList<Critter>();
 	private static List<Critter> babies = new ArrayList<Critter>();
 	private static Map<Point, ArrayList<Critter>> map = new HashMap<Point, ArrayList<Critter>>();
@@ -135,8 +136,12 @@ public abstract class Critter {
 	 * @param direction
 	 */
 	protected final void reproduce(Critter offspring, int direction) {
-		if (this.energy < Params.min_reproduce_energy)
+		if (energy < Params.min_reproduce_energy){
+			if (DEBUG) System.out.println("Energy not enough");
 			return;
+		}
+		offspring.energy = energy/2;
+		energy -= offspring.energy;
 		offspring.setCoord(calcDirection(getCoord(), direction, 1));
 		babies.add(offspring);
 	}
@@ -164,17 +169,14 @@ public abstract class Critter {
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
 		try {
-			System.out.println(myPackage);
 			Critter new_critter = (Critter) Class.forName(myPackage + '.' + critter_class_name).newInstance();
 			new_critter.energy = Params.start_energy;
 			new_critter.setX_coord(getRandomInt(Params.world_width)); 
 			new_critter.setY_coord(getRandomInt(Params.world_height));
 			population.add(new_critter);
 		}
-		catch (ClassNotFoundException e) {
+		catch (ClassNotFoundException|InstantiationException|IllegalAccessException e) {
 			throw new InvalidCritterException(critter_class_name);
-		}
-		catch (Exception e) {
 		}
 	}
 	
@@ -192,7 +194,6 @@ public abstract class Critter {
 					result.add(c);
 			}
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 			throw new InvalidCritterException(critter_class_name);
 		}
 		return result;
@@ -204,7 +205,7 @@ public abstract class Critter {
 	 */
 	public static void runStats(List<Critter> critters) {
 		System.out.print("" + critters.size() + " critters as follows -- ");
-		java.util.Map<String, Integer> critter_count = new java.util.HashMap<String, Integer>();
+		Map<String, Integer> critter_count = new HashMap<String, Integer>();
 		for (Critter crit : critters) {
 			String crit_string = crit.toString();
 			Integer old_count = critter_count.get(crit_string);
@@ -282,7 +283,7 @@ public abstract class Critter {
 					population.remove(c2);
 					continue;
 				}
-				if (!(c1 instanceof Algae) || !(c2 instanceof Algae)) {
+				if (DEBUG && !(c1 instanceof Algae) || !(c2 instanceof Algae)) {
 					System.out.print("Fight between: ");
 					System.out.println(c1.toString() + ' ' + c2.toString() + ' ' + c2.getCoord());
 				}
