@@ -16,10 +16,10 @@ public class MyCritter3 extends MyCritter1{
 	
 	@Override
 	/**
-	 * Never fights, but always tries to run away.
+	 * Never fights
 	 */
 	public boolean fight(String opp) {
-		run(myDir);
+		//run(myDir);
 		return false;
 	}
 	
