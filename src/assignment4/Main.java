@@ -1,12 +1,11 @@
 /* CRITTERS Main.java
  * EE422C Project 4 submission by
- * Replace <...> with your actual data.
- * <Student1 Name>
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * Yilin Zhu
+ * yz22778
+ * 16450
+ * Andrew Wong
+ * aw27772
+ * 16450
  * Slip days used: <0>
  * Fall 2016
  */
@@ -76,6 +75,10 @@ public class Main {
 				Critter.makeCritter("Algae");
 			for (int a = 0; a < 1; a++)
 				Critter.makeCritter("Craig");
+			for (int a = 0; a < 1; a++)
+				Critter.makeCritter("MyCritter1");
+			for (int a = 0; a < 4; a++)
+				Critter.makeCritter("MyCritter2");
 		} catch (InvalidCritterException e) {
 			System.out.println("Invalid Critter exception!");
 		}
@@ -96,9 +99,17 @@ public class Main {
 							int steps = 1;
 							if (words.length > 1)
 								steps = Integer.parseInt(words[1]);
-							for (int i = 0; i < steps; i++)
+							for (int i = 0; i < steps; i++){
 								Critter.worldTimeStep();
-							Critter.displayWorld();
+								if (DEBUG) {
+									Critter.displayWorld();
+									try {
+									    Thread.sleep(100);
+									} catch(InterruptedException ex) {
+									    Thread.currentThread().interrupt();
+									}
+								}
+							}
 						} catch (NumberFormatException e) {
 							System.out.println("error processing: " + input);
 						}
@@ -144,7 +155,9 @@ public class Main {
 						}
 					} else
 						System.out.println("error processing: " + input);
-				} else if (input.equals("quit")) {
+				} else if (input.equals("clear")) {
+					Critter.clearWorld();
+				}else if (input.equals("quit")) {
 					break;
 				} else {
 					System.out.println("invalid command: " + input);

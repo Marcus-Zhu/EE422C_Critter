@@ -1,12 +1,11 @@
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
- * Replace <...> with your actual data.
- * <Student1 Name>
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * Yilin Zhu
+ * yz22778
+ * 16450
+ * Andrew Wong
+ * aw27772
+ * 16450
  * Slip days used: <0>
  * Fall 2016
  */
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /* see the PDF for descriptions of the methods and fields in this class
  * you may add fields, methods or inner classes to Critter ONLY if you make your additions private
@@ -27,10 +27,10 @@ import java.util.Map;
 
 public abstract class Critter {
 	private static String myPackage;
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 	private	static List<Critter> population = new ArrayList<Critter>();
 	private static List<Critter> babies = new ArrayList<Critter>();
-	private static Map<Point, ArrayList<Critter>> map = new HashMap<Point, ArrayList<Critter>>();
+	private static Map<Point, ArrayList<Critter>> map = new ConcurrentHashMap<Point, ArrayList<Critter>>();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -108,7 +108,7 @@ public abstract class Critter {
 				return true;
 			}
 		}
-		System.out.println(getCoord());
+		if (DEBUG) System.out.println("Cannot move in fight:" + getCoord());
 		return false;
 	}
 
@@ -283,13 +283,19 @@ public abstract class Critter {
 					population.remove(c2);
 					continue;
 				}
-				if (DEBUG && !(c1 instanceof Algae) || !(c2 instanceof Algae)) {
-					System.out.print("Fight between: ");
-					System.out.println(c1.toString() + ' ' + c2.toString() + ' ' + c2.getCoord());
+				if (!c1.getCoord().equals(c2.getCoord())){
+					updateMap();
+					continue;
+				}
+				if (DEBUG){
+					if (!(c1 instanceof Algae) || !(c2 instanceof Algae)) {
+						System.out.print("Fight between: ");
+						System.out.println(c1.toString() + ' ' + c2.toString() + ' ' + c2.getCoord());
+					}
 				}
 				int r1 = f1 ? getRandomInt(c1.energy) : 0;
 				int r2 = f2 ? getRandomInt(c2.energy) : 0;
-				if (r1 > r2) {
+				if (r1 > r2 || (r1 == r2 && (c2 instanceof Algae))) {
 					c1.energy += c2.energy / 2;
 					c2.energy = 0;
 					mapPop.remove(1);
@@ -369,6 +375,13 @@ public abstract class Critter {
 		for (int i = 0; i < Params.world_width; i++)
 			o.print('-');
 		o.println('+');
+		
+		if (DEBUG) {
+			for (Critter c : population){
+				if (!(c instanceof Algae))
+				System.out.println(c.toString()+' '+c.getCoord()+' '+c.energy);
+			}
+		}
 	}
 
 	/**
