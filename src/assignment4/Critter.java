@@ -175,7 +175,7 @@ public abstract class Critter {
 			new_critter.setY_coord(getRandomInt(Params.world_height));
 			population.add(new_critter);
 		}
-		catch (ClassNotFoundException|InstantiationException|IllegalAccessException e) {
+		catch (ClassNotFoundException|InstantiationException|IllegalAccessException|NoClassDefFoundError e) {
 			throw new InvalidCritterException(critter_class_name);
 		}
 	}

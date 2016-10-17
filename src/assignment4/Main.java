@@ -70,7 +70,7 @@ public class Main {
 		/* Write your code below. */
 
 		// System.out.println("GLHF");
-		try {
+		/*try {
 			for (int a = 0; a < 5; a++)
 				Critter.makeCritter("Algae");
 			for (int a = 0; a < 1; a++)
@@ -81,7 +81,7 @@ public class Main {
 				Critter.makeCritter("MyCritter2");
 		} catch (InvalidCritterException e) {
 			System.out.println("Invalid Critter exception!");
-		}
+		}*/
 
 		String input = "";
 		// loop until get a valid input
@@ -148,9 +148,9 @@ public class Main {
 							Method m = Class.forName(myPackage + '.' + critName).getMethod("runStats",
 									List.class);
 							m.invoke(null, critList);
-						} catch (InvalidCritterException e) {
+						} /*catch (InvalidCritterException e) {
 							System.out.println("error processing: " + input);
-						} catch (Exception e) {
+						}*/ catch (Exception | NoClassDefFoundError e) {
 							System.out.println("error processing: " + input);
 						}
 					} else
