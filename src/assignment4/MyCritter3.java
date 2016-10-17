@@ -1,8 +1,8 @@
 package assignment4;
 
-/*
- * This Critter is good for testing running away while fighting, and for testing 
- * movement in different directions.
+/**
+ * This Critter only runs in north, east, south, or west direction
+ * @author Andrew Wong
  */
 public class MyCritter3 extends MyCritter1{
 	
@@ -10,17 +10,16 @@ public class MyCritter3 extends MyCritter1{
 	
 	@Override
 	public void doTimeStep () {
-		walk(myDir);
-		myDir = (myDir+1)%8; // change direction each walk call, CCW.
+		run(myDir);
+		myDir = (myDir + 2) % 8; // change cardinal direction each walk call, CCW.
 	}
 	
 	@Override
 	/**
-	 * Never fights
+	 * Critter only fights when facing north or south
 	 */
 	public boolean fight(String opp) {
-		//run(myDir);
-		return false;
+		return (myDir == 2 || myDir == 6);
 	}
 	
 	public String toString() {

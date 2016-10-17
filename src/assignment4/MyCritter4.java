@@ -1,8 +1,8 @@
 package assignment4;
 
-/*
- * This Critter is good for testing running away while fighting, and for testing 
- * movement in different directions.
+/**
+ * This Critter runs in random directions
+ * @author Andrew Wong
  */
 public class MyCritter4 extends MyCritter1{
 	
@@ -10,9 +10,8 @@ public class MyCritter4 extends MyCritter1{
 	
 	@Override
 	public void doTimeStep () {
+		myDir = Critter.getRandomInt(7);
 		run (myDir);
-		//walk(myDir);
-		//myDir = (myDir+1)%8; // change direction each walk call, CCW.
 	}
 	
 	@Override
@@ -20,7 +19,6 @@ public class MyCritter4 extends MyCritter1{
 	 * Always fights
 	 */
 	public boolean fight(String opp) {
-		//run(myDir);
 		return true;
 	}
 	
