@@ -70,18 +70,24 @@ public class Main {
 		/* Write your code below. */
 
 		// System.out.println("GLHF");
-		/*try {
-			for (int a = 0; a < 5; a++)
-				Critter.makeCritter("Algae");
-			for (int a = 0; a < 1; a++)
-				Critter.makeCritter("Craig");
-			for (int a = 0; a < 1; a++)
-				Critter.makeCritter("MyCritter1");
-			for (int a = 0; a < 4; a++)
-				Critter.makeCritter("MyCritter2");
-		} catch (InvalidCritterException e) {
-			System.out.println("Invalid Critter exception!");
-		}*/
+//		try {
+//			for (int a = 0; a < 5; a++)
+//				Critter.makeCritter("Algae");
+//			for (int a = 0; a < 2; a++)
+//				Critter.makeCritter("Craig");
+//			for (int a = 0; a < 2; a++)
+//				Critter.makeCritter("MyCritter1");
+//			for (int a = 0; a < 2; a++)
+//				Critter.makeCritter("MyCritter2");
+//			for (int a = 0; a < 2; a++)
+//				Critter.makeCritter("MyCritter3");
+//			for (int a = 0; a < 2; a++)
+//				Critter.makeCritter("MyCritter4");
+//			for (int a = 0; a < 2; a++)
+//				Critter.makeCritter("MyCritter5");
+//		} catch (InvalidCritterException e) {
+//			System.out.println("Invalid Critter exception!");
+//		}
 
 		String input = "";
 		// loop until get a valid input
@@ -148,9 +154,9 @@ public class Main {
 							Method m = Class.forName(myPackage + '.' + critName).getMethod("runStats",
 									List.class);
 							m.invoke(null, critList);
-						} /*catch (InvalidCritterException e) {
+						} catch (InvalidCritterException e) {
 							System.out.println("error processing: " + input);
-						}*/ catch (Exception | NoClassDefFoundError e) {
+						} catch (Exception e) {
 							System.out.println("error processing: " + input);
 						}
 					} else

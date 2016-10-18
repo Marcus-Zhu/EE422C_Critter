@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /* see the PDF for descriptions of the methods and fields in this class
  * you may add fields, methods or inner classes to Critter ONLY if you make your additions private
@@ -30,7 +29,7 @@ public abstract class Critter {
 	private static boolean DEBUG = false;
 	private	static List<Critter> population = new ArrayList<Critter>();
 	private static List<Critter> babies = new ArrayList<Critter>();
-	private static Map<Point, ArrayList<Critter>> map = new ConcurrentHashMap<Point, ArrayList<Critter>>();
+	private static Map<Point, ArrayList<Critter>> map = new HashMap<Point, ArrayList<Critter>>();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -283,8 +282,12 @@ public abstract class Critter {
 					population.remove(c2);
 					continue;
 				}
-				if (!c1.getCoord().equals(c2.getCoord())){
-					updateMap();
+				if (!p.equals(c1.getCoord())){
+					mapPop.remove(c1);
+					continue;
+				}
+				if (!p.equals(c2.getCoord())){
+					mapPop.remove(c2);
 					continue;
 				}
 				if (DEBUG){

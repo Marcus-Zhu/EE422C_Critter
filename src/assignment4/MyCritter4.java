@@ -4,7 +4,7 @@ package assignment4;
  * This Critter runs in random directions
  * @author Andrew Wong
  */
-public class MyCritter4 extends MyCritter1{
+public class MyCritter4 extends Critter{
 	
 	private int myDir = 0;
 	

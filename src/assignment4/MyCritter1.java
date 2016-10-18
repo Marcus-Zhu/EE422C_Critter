@@ -1,4 +1,4 @@
-/* CRITTERS MyCritter2.java
+/* CRITTERS MyCritter1.java
  * EE422C Project 4 submission by
  * Yilin Zhu
  * yz22778
@@ -53,7 +53,7 @@ public class MyCritter1 extends Critter {
 	}
 
 	public String toString() {
-		return "1";
+		return "0";
 	}
 
 	public static void runStats(List<Critter> mycritter1s) {

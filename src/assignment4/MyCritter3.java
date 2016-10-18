@@ -4,7 +4,7 @@ package assignment4;
  * This Critter only runs in north, east, south, or west direction
  * @author Andrew Wong
  */
-public class MyCritter3 extends MyCritter1{
+public class MyCritter3 extends Critter{
 	
 	private int myDir = 0;
 	
