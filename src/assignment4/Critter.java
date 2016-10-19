@@ -58,11 +58,11 @@ public abstract class Critter {
 	private static boolean in_fight_mode = false;
 
 	protected int getX_coord() { return x_coord; }
-	protected void setX_coord(int x_coord) { this.x_coord = x_coord; }
+	private void setX_coord(int x_coord) { this.x_coord = x_coord; }
 	protected int getY_coord() { return y_coord; }
-	protected void setY_coord(int y_coord) { this.y_coord = y_coord; }
-	protected void setCoord(Point p){ this.x_coord = p.x; this.y_coord = p.y; }
+	private void setY_coord(int y_coord) { this.y_coord = y_coord; }
 	protected Point getCoord(){	return new Point(x_coord, y_coord); }
+	private void setCoord(Point p){ this.x_coord = p.x; this.y_coord = p.y; }
 
 	/**
 	 * Calculate a world position by current position, direction and distance.
@@ -394,7 +394,8 @@ public abstract class Critter {
 		for (int i = 0; i < Params.refresh_algae_count; i++) {
 			Algae a = new Algae();
 			a.setEnergy(Params.start_energy);
-			a.setCoord(new Point(getRandomInt(Params.world_width), getRandomInt(Params.world_height)));
+			a.setX_coord(getRandomInt(Params.world_width));
+			a.setY_coord(getRandomInt(Params.world_height));
 			population.add(a);
 		}
 	}
