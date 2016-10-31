@@ -9,7 +9,7 @@
  * Slip days used: <0>
  * Fall 2016
  */
-package assignment4;
+package assignment5;
 
 import java.awt.Point;
 import java.io.PrintStream;
@@ -35,23 +35,23 @@ public abstract class Critter {
 	static {
 		myPackage = Critter.class.getPackage().toString().split(" ")[1];
 	}
-	
+
 	private static java.util.Random rand = new java.util.Random();
 	public static int getRandomInt(int max) {
 		return rand.nextInt(max);
 	}
-	
+
 	public static void setSeed(long new_seed) {
 		rand = new java.util.Random(new_seed);
 	}
-	
-	
+
+
 	/* a one-character long string that visually depicts your critter in the ASCII interface */
 	public String toString() { return ""; }
-	
+
 	private int energy = 0;
 	protected int getEnergy() { return energy; }
-	
+
 	private int x_coord;
 	private int y_coord;
 	private int lastMovedTimeStep = -1;
@@ -111,6 +111,10 @@ public abstract class Critter {
 		return false;
 	}
 
+	public Object look(int dir, boolean b){
+		return null;
+	}
+
 	/**
 	 * Walk in direction for 1 step.
 	 * @param direction
@@ -118,7 +122,7 @@ public abstract class Critter {
 	protected final void walk(int direction) {
 		moveDirection(direction, 1);
 		energy -= Params.walk_energy_cost;
-	}	
+	}
 
 	/**
 	 * Run in direction for 2 steps.
@@ -128,7 +132,7 @@ public abstract class Critter {
 		moveDirection(direction, 2);
 		energy -= Params.run_energy_cost;
 	}
-	
+
 	/**
 	 * Concrete subclasses of Critter may invoke this function.
 	 * @param offspring
@@ -155,7 +159,7 @@ public abstract class Critter {
 	protected void updateRestEnergy() {
 		energy -= Params.rest_energy_cost;
 	};
-	
+
 	/**
 	 * create and initialize a Critter subclass.
 	 * critter_class_name must be the unqualified name of a concrete subclass of Critter, if not,
@@ -168,17 +172,18 @@ public abstract class Critter {
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
 		try {
-			Critter new_critter = (Critter) Class.forName(myPackage + '.' + critter_class_name).newInstance();
+			Critter new_critter = (Critter) Class.forName(critter_class_name).newInstance();
 			new_critter.energy = Params.start_energy;
-			new_critter.setX_coord(getRandomInt(Params.world_width)); 
+			new_critter.setX_coord(getRandomInt(Params.world_width));
 			new_critter.setY_coord(getRandomInt(Params.world_height));
 			population.add(new_critter);
 		}
-		catch (ClassNotFoundException|InstantiationException|IllegalAccessException|NoClassDefFoundError e) {
+		catch (Exception e) {
+//		catch (InstantiationException|IllegalAccessException|NoClassDefFoundError e) {
 			throw new InvalidCritterException(critter_class_name);
 		}
 	}
-	
+
 	/**
 	 * Gets a list of critters of a specific type.
 	 * @param critter_class_name What kind of Critter is to be listed.  Unqualified class name.
@@ -189,7 +194,7 @@ public abstract class Critter {
 		List<Critter> result = new java.util.ArrayList<Critter>();
 		try {
 			for (Critter c : population) {
-				if (Class.forName(myPackage + '.' + critter_class_name).isInstance(c))
+				if (Class.forName(critter_class_name).isInstance(c))
 					result.add(c);
 			}
 		} catch (ClassNotFoundException e) {
@@ -197,7 +202,7 @@ public abstract class Critter {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Prints out how many Critters of each type there are on the board.
 	 * @param critters List of Critters.
@@ -219,13 +224,13 @@ public abstract class Critter {
 			System.out.print(prefix + s + ":" + critter_count.get(s));
 			prefix = ", ";
 		}
-		System.out.println();		
+		System.out.println();
 	}
-	
-	/* the TestCritter class allows some critters to "cheat". If you want to 
+
+	/* the TestCritter class allows some critters to "cheat". If you want to
 	 * create tests of your Critter model, you can create subclasses of this class
-	 * and then use the setter functions contained here. 
-	 * 
+	 * and then use the setter functions contained here.
+	 *
 	 * NOTE: you must make sure that the setter functions work with your implementation
 	 * of Critter. That means, if you're recording the positions of your critters
 	 * using some sort of external grid or some other data structure in addition
@@ -249,9 +254,9 @@ public abstract class Critter {
 		population = new ArrayList<Critter>();
 		babies = new ArrayList<Critter>();
 		map = new HashMap<Point, ArrayList<Critter>>();
-		timeStep = 0;		
+		timeStep = 0;
 	}
-	
+
 	/**
 	 * The main loop for critter world. Excecuted for every timestep.
 	 */
@@ -312,7 +317,7 @@ public abstract class Critter {
     		}
 		}
 		in_fight_mode = false;
-        
+
 		for (int i = 0; i < population.size(); i++){
 			Critter c = population.get(i);
 			c.updateRestEnergy();
@@ -351,7 +356,7 @@ public abstract class Critter {
 	public static void displayWorld() {
 		updateMap();
 		PrintStream o = System.out;
-		
+
 		o.print('+');
 		for (int i = 0; i < Params.world_width; i++)
 			o.print('-');
@@ -378,7 +383,7 @@ public abstract class Critter {
 		for (int i = 0; i < Params.world_width; i++)
 			o.print('-');
 		o.println('+');
-		
+
 		if (DEBUG) {
 			for (Critter c : population){
 				if (!(c instanceof Algae))
@@ -387,8 +392,12 @@ public abstract class Critter {
 		}
 	}
 
+	public static Map<Point, ArrayList<Critter>> getMap(){
+		updateMap();
+		return map;
+	}
 	/**
-	 * Generate random positioned algaed of refresh_algae_count number.
+	 * Generate random positioned algae of refresh_algae_count number.
 	 */
 	public static final void generateAlgae() {
 		for (int i = 0; i < Params.refresh_algae_count; i++) {

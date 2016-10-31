@@ -1,4 +1,4 @@
-package assignment4;
+package assignment5;
 /* CRITTERS <MyClass.java>
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.

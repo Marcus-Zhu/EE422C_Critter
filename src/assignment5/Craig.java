@@ -1,4 +1,4 @@
-package assignment4;
+package assignment5;
 
 /*
  * Example critter

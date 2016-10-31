@@ -1,8 +1,5 @@
-package assignment4;
-/*
- * Do not change this file.
- */
-import assignment4.Critter.TestCritter;
+package assignment5;
+import assignment5.Critter.TestCritter;
 
 public class Algae extends TestCritter {
 

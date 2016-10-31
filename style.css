@@ -1,0 +1,171 @@
+.root{
+    -fx-background-color: linear-gradient(from 0 0 to 0 400, #7eccc8, #beeadd);
+}
+#world-board{
+    -fx-translate-x:50;
+    -fx-translate-y:50;
+    -fx-padding: 20;
+  -fx-arc-height: 25;
+  -fx-arc-width: 25;
+  -fx-fill: #FCFCFC;
+  -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.4),0,0,0,3);
+}
+.grid{
+  -fx-hgap: 10;
+  -fx-vgap: 10;
+  -fx-padding: 0 10 0 0;
+  -fx-alighment: center;
+  -fx-alignment: center-right;
+  /*-fx-grid-lines-visible: true;*/
+}
+.hbox{
+  -fx-spacing: 10;
+}
+.vbox{
+  -fx-spacing: 10;
+  -fx-padding: 15;
+  -fx-alignment: center-left;
+}
+.label{
+    -fx-font: bold 20 "Helvetica";
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-label-padding:8;
+  -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.2),0,0,0,3);
+}
+.text-field{
+    -fx-background-color:rgba(255,255,255,0.9);
+  -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.2),0,0,0,3);
+    -fx-background-radius: 0;
+    -fx-pref-width: 150;
+    -fx-pref-height: 30; 
+}
+.button {
+    -fx-text-fill: black;
+    -fx-font-family: "Arial";
+    -fx-background-color:rgba(255,255,255,0.9);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-text-align:center;
+    -fx-pref-width: 150;
+    -fx-pref-height: 30; 
+  -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.2),0,0,0,3);
+}
+.button:hover {
+    -fx-background-color:rgba(255,255,255,0.78);
+    -fx-text-fill: black;
+}
+.button:pressed {
+    -fx-background-color:rgba(255,255,255,0.37);
+    -fx-text-fill: white;
+}
+
+.separator{
+    -fx-padding: 6;
+}
+.separator:horizontal .line {
+    -fx-border-color: #EEEEEE transparent transparent transparent;
+}
+
+.spinner {
+    -fx-body-color:rgba(255,255,255,0.9);
+    -fx-border-radius: 0;
+    -fx-text-align:center;
+    -fx-pref-width: 150;
+    -fx-pref-height: 30; 
+    -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.2),0,0,0,3);
+}
+
+.combo-box{
+    -fx-font-family: "Arial";
+    -fx-background-color:rgba(255,255,255,0.9);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-text-align:center; 
+    -fx-pref-width: 150; 
+    -fx-pref-height: 30; 
+  -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.2),0,0,0,3);
+}
+.combo-box-popup .list-view 
+{
+    -fx-background-color: white, white;
+    -fx-background-insets: 0, 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
+    -fx-pref-width: 150; 
+}  
+.combo-box .list-cell 
+{
+    -fx-background: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-padding: 3 0 2 7;
+    -fx-cell-size: 1.7em; 
+}
+
+#make-field{  
+    -fx-pref-width: 70;
+}
+#make-spin{  
+    -fx-pref-width: 70;
+}
+
+.text-area {
+    -fx-pref-height: 172;
+    -fx-font: bold 16 'Courier New';
+}
+/*
+.combo-box-popup .list-view 
+{
+    -fx-background-color: white, white;
+    -fx-background-insets: 0, 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
+}    
+
+.combo-box-popup .list-view .list-cell 
+{
+    -fx-padding: 4 0 4 5;
+
+    -fx-background-color: white;
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover 
+{
+    -fx-background: -fx-accent;
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover 
+{
+    -fx-background-color: white;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+.combo-box-base  
+{
+    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
+    -fx-background-color: white, white, white, white;
+    -fx-background-radius: 5, 5, 4, 3;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-padding: 0;
+}
+
+.combo-box-base:hover
+{
+    -fx-color: -fx-hover-base;
+}
+
+.combo-box-base:showing 
+{
+    -fx-color: -fx-pressed-base;
+}
+
+.combo-box-base:focused {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 6.4, 4, 5, 3;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+
+.combo-box-base:disabled {
+    -fx-opacity: .4;
+}*/
