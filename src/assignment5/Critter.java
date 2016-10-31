@@ -111,7 +111,23 @@ public abstract class Critter {
 		return false;
 	}
 
-	public Object look(int dir, boolean b){
+	public String look(int dir, boolean steps){
+		this.energy -= Params.look_energy_cost;
+		// steps = true means move 2 steps
+		Point nextPt;
+		if (steps){
+			nextPt = calcDirection(new Point(x_coord, y_coord), dir, 2);
+		}
+		// otherwise move 1 step
+		else{
+			nextPt = calcDirection(new Point(x_coord, y_coord), dir, 1);	
+		}
+		// test if another critter in same coordinates as where critter will move
+		for (Critter c: population){
+			if (c.getCoord().equals(nextPt)){
+				return c.toString();
+			}
+		}
 		return null;
 	}
 
