@@ -52,7 +52,7 @@ public abstract class Critter {
 	 * need to, but please preserve that intent as you implement them. 
 	 */
 	public Color viewColor() { 
-		return javafx.scene.paint.Color.WHITE; 
+		return javafx.scene.paint.Color.BLUE; 
 	}
 	
 	public javafx.scene.paint.Color viewOutlineColor() { return viewColor(); }
