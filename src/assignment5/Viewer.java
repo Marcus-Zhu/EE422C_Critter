@@ -33,6 +33,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.scene.paint.Color;
 
 public class Viewer extends Application {
 	final int worldX = 650;
@@ -276,12 +277,14 @@ public class Viewer extends Application {
 		for (int i = 0; i < w; i++){
 			for (int j = 0; j < h; j++){
 				if (m.containsKey(new Point(i,j))){
+					//Critter c = m.get(new Point(i,j));
 					double s = Math.min((worldX-worldPadding*2)/(w-1),
 							(worldY-worldPadding*2)/(h-1))/10;
 					double x = (worldX-worldPadding*2.0-s)*i/(w-1)+worldPadding;
 					double y = (worldY-worldPadding*2.0-s)*j/(h-1)+worldPadding;
 //					System.out.println(x+" "+y);
 					Circle a = new Circle(s);
+					a.setFill(Color.RED);
 					critters.add(a);
 					// translate wrt top-left corner of circle
 					a.setTranslateX(x-s/2);

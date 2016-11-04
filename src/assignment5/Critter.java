@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import javafx.scene.paint.Color;
 /* see the PDF for descriptions of the methods and fields in this class
  * you may add fields, methods or inner classes to Critter ONLY if you make your additions private
  * no new public, protected or default-package code or data can be added to Critter
@@ -30,7 +30,41 @@ public abstract class Critter {
 	private	static List<Critter> population = new ArrayList<Critter>();
 	private static List<Critter> babies = new ArrayList<Critter>();
 	private static Map<Point, ArrayList<Critter>> map = new HashMap<Point, ArrayList<Critter>>();
-
+	
+	/* NEW FOR PROJECT 5 */
+	public enum CritterShape {
+		CIRCLE,
+		SQUARE,
+		TRIANGLE,
+		DIAMOND,
+		STAR
+	}
+	
+	/* the default color is white, which I hope makes critters invisible by default
+	 * If you change the background color of your View component, then update the default
+	 * color to be the same as you background 
+	 * 
+	 * critters must override at least one of the following three methods, it is not 
+	 * proper for critters to remain invisible in the view
+	 * 
+	 * If a critter only overrides the outline color, then it will look like a non-filled 
+	 * shape, at least, that's the intent. You can edit these default methods however you 
+	 * need to, but please preserve that intent as you implement them. 
+	 */
+	public Color viewColor() { 
+		return javafx.scene.paint.Color.WHITE; 
+	}
+	
+	public javafx.scene.paint.Color viewOutlineColor() { return viewColor(); }
+	public javafx.scene.paint.Color viewFillColor() { return viewColor(); }
+	
+	//TODO: OVERRIDE VIEWSHAPE IN CRITTER METHODS!!!
+	//public abstract CritterShape viewShape(); 
+	public CritterShape viewShape(){
+		return null;
+	}
+	
+	
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
 		myPackage = Critter.class.getPackage().toString().split(" ")[1];
@@ -91,9 +125,9 @@ public abstract class Critter {
 	 * @param step 1 for walk, 2 for run
 	 * @return result
 	 */
-	private boolean moveDirection(int dir, int step) {
+	private boolean moveDirection(int direction , int step) {
 		if (lastMovedTimeStep < timeStep){
-			Point dest = calcDirection(getCoord(), dir, step);
+			Point dest = calcDirection(getCoord(), direction , step);
 			boolean pos_conflict = false;
 			if (in_fight_mode)
 				for (Critter c : population)
@@ -111,11 +145,11 @@ public abstract class Critter {
 		return false;
 	}
 
-	public String look(int dir, boolean steps){
+	protected String look(int direction, boolean steps){
 		this.energy -= Params.look_energy_cost;
 		// steps = true means move 2 steps
 		Point nextPt;
-		nextPt = calcDirection(getCoord(), dir, (steps) ? 2 : 1);
+		nextPt = calcDirection(getCoord(), direction, (steps) ? 2 : 1);
 		// test if another critter in same coordinates as where critter will move
 		if (map.containsKey(nextPt)){
 			return map.get(nextPt).get(0).toString();
