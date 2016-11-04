@@ -2,12 +2,9 @@ package assignment5;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,8 +17,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
+
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -30,10 +26,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -41,8 +35,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class Viewer extends Application {
-	final int worldX = 550;
-	final int worldY = 550;
+	final int worldX = 650;
+	final int worldY = 650;
 	final int worldPadding = 50;
 
 	GridPane grid;
@@ -60,9 +54,12 @@ public class Viewer extends Application {
 	ComboBox<String> statCbox;
 	Button statBtn;
 	Separator sep3;
+	Spinner<Integer> seedSpin;
+	Button seedBtn;
+	Separator sep4;
 	Spinner<Integer> runSpin;
 	Button runBtn;
-	Separator sep4;
+	Separator sep5;
 	Button quitBtn;
 	VBox controlPanel;
 	TextArea statConsoleArea;
@@ -91,7 +88,9 @@ public class Viewer extends Application {
 		critterLbl = new Label("Critter World");
 		makeCbox = new ComboBox<String>();
 		makeCbox.setId("make-combo");
+
 		makeSpin = new Spinner<Integer>(1, Integer.MAX_VALUE, 1);
+//		makeSpin.setEditable(true);
 		makeSpin.setId("make-spin");
 		makeBtn = new Button("MAKE");
 		makeBox = new HBox();
@@ -105,9 +104,12 @@ public class Viewer extends Application {
 		statCbox = new ComboBox<String>();
 		statBtn = new Button("STAT");
 		sep3 = new Separator();
+		seedSpin = new Spinner<Integer>(1, Integer.MAX_VALUE, 1);
+		seedBtn = new Button("SEED");
+		sep4 = new Separator();
 		runSpin = new Spinner<Integer>(1, Integer.MAX_VALUE, 1);
 		runBtn = new Button("RUN");
-		sep4 = new Separator();
+		sep5 = new Separator();
 		quitBtn = new Button("QUIT");
 
 		controlPanel = new VBox();
@@ -122,9 +124,12 @@ public class Viewer extends Application {
 		controlPanel.getChildren().add(statCbox);
 		controlPanel.getChildren().add(statBtn);
 		controlPanel.getChildren().add(sep3);
+		controlPanel.getChildren().add(seedSpin);
+		controlPanel.getChildren().add(seedBtn);
+		controlPanel.getChildren().add(sep4);
 		controlPanel.getChildren().add(runSpin);
 		controlPanel.getChildren().add(runBtn);
-		controlPanel.getChildren().add(sep4);
+		controlPanel.getChildren().add(sep5);
 		controlPanel.getChildren().add(quitBtn);
 		grid.add(controlPanel, 1, 0);
 
@@ -207,12 +212,24 @@ public class Viewer extends Application {
 			}
 		});
 
+		seedBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				statConsoleArea.appendText(Controller.seed(seedSpin.getValue()));
+			}
+		});
+
 		runBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				if (!inRunState) {
-					runSpin.setDisable(true);
+					for (Node n : controlPanel.getChildren())
+						n.setDisable(true);
+					critterLbl.setDisable(false);
+					runBtn.setDisable(false);
 					runBtn.setText("STOP");
+					quitBtn.setDisable(false);
+
 					int rate = runSpin.getValue();
 					timer = new Timer();
 					timer.scheduleAtFixedRate(new TimerTask() {
@@ -226,7 +243,8 @@ public class Viewer extends Application {
 					}, 0, 1000L / (long) rate);
 					inRunState = true;
 				} else {
-					runSpin.setDisable(false);
+					for (Node n : controlPanel.getChildren())
+						n.setDisable(false);
 					runBtn.setText("RUN");
 					timer.cancel();
 					inRunState = false;
@@ -274,7 +292,7 @@ public class Viewer extends Application {
 		boardGroup.getChildren().addAll(critters);
 	}
 
-	public static void main(String[] args) {
+	public static void init(String[] args) {
 		launch(args);
 	}
 

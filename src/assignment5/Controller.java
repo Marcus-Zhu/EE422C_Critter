@@ -85,11 +85,12 @@ public class Controller {
 		return Critter.getMap();
 	}
 
-	public static void seed(long n) {
+	public static String seed(long n) {
 		try {
 			Critter.setSeed(n);
+			return "seed " + n + " set.";
 		} catch (NumberFormatException e) {
-			System.out.println("error processing: seed " + n + '\n');
+			return "error processing: seed " + n + '\n';
 		}
 	}
 

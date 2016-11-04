@@ -115,18 +115,10 @@ public abstract class Critter {
 		this.energy -= Params.look_energy_cost;
 		// steps = true means move 2 steps
 		Point nextPt;
-		if (steps){
-			nextPt = calcDirection(new Point(x_coord, y_coord), dir, 2);
-		}
-		// otherwise move 1 step
-		else{
-			nextPt = calcDirection(new Point(x_coord, y_coord), dir, 1);	
-		}
+		nextPt = calcDirection(getCoord(), dir, (steps) ? 2 : 1);
 		// test if another critter in same coordinates as where critter will move
-		for (Critter c: population){
-			if (c.getCoord().equals(nextPt)){
-				return c.toString();
-			}
+		if (map.containsKey(nextPt)){
+			return map.get(nextPt).get(0).toString();
 		}
 		return null;
 	}
@@ -334,19 +326,22 @@ public abstract class Critter {
 		}
 		in_fight_mode = false;
 
-		for (int i = 0; i < population.size(); i++){
-			Critter c = population.get(i);
+		// subtract rest energy
+		for (Critter c : population){
 			c.updateRestEnergy();
-			if (c.energy <= 0) {
-				population.remove(i);
-				i--;
-			}
 		}
 
         generateAlgae();
 
+        // add babies to world
 		population.addAll(babies);
 		babies.clear();
+
+		// remove dead critters
+		for (Critter c : population){
+			if (c.energy <= 0)
+				population.remove(c);
+		}
 	}
 
 	/**
@@ -369,7 +364,7 @@ public abstract class Critter {
 	 * Print the critter world with each critter as a character. Border of the
 	 * world is also printed.
 	 */
-	public static void displayWorld() {
+	public static void displayWorldCLI() {
 		updateMap();
 		PrintStream o = System.out;
 
@@ -423,5 +418,9 @@ public abstract class Critter {
 			a.setY_coord(getRandomInt(Params.world_height));
 			population.add(a);
 		}
+	}
+
+	public static final void displayWorld(){
+		Viewer.init(null);
 	}
 }
