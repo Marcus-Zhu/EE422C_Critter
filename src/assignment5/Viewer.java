@@ -277,11 +277,12 @@ public class Viewer extends Application {
 		for (int i = 0; i < w; i++){
 			for (int j = 0; j < h; j++){
 				if (m.containsKey(new Point(i,j))){
+					//============== Andrew's added code (delete if incorrect) =============
 					ArrayList<Critter> critArr = m.get(new Point(i,j));
 					Critter crit = null;
 					if (critArr.size() > 0 && critArr != null )
 						crit = critArr.get(critArr.size() - 1);
-					
+					//======================================================================
 					double s = Math.min((worldX-worldPadding*2)/(w-1),
 							(worldY-worldPadding*2)/(h-1))/10;
 					double x = (worldX-worldPadding*2.0-s)*i/(w-1)+worldPadding;
