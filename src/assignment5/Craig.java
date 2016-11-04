@@ -1,5 +1,8 @@
 package assignment5;
 
+import assignment5.Critter.CritterShape;
+import javafx.scene.paint.Color;
+
 /*
  * Example critter
  */
@@ -11,6 +14,20 @@ public class Craig extends Critter {
 	private static final int GENE_TOTAL = 24;
 	private int[] genes = new int[8];
 	private int dir;
+	
+	@Override
+	public Color viewColor() { 
+		return javafx.scene.paint.Color.BLACK; 
+	}
+	
+	@Override
+	public CritterShape viewShape(){
+		return CritterShape.SQUARE;
+	}
+	@Override
+	public Color viewOutlineColor() {
+		return javafx.scene.paint.Color.RED; 
+	}
 	
 	public Craig() {
 		for (int k = 0; k < 8; k += 1) {

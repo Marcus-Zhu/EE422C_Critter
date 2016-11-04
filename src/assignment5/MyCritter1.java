@@ -13,6 +13,9 @@
 
 import java.util.*;
 
+import assignment5.Critter.CritterShape;
+import javafx.scene.paint.Color;
+
 /**
  * This critter tends to keep away from fighting and reluctant from moving, but
  * likes reproducing.
@@ -23,7 +26,20 @@ import java.util.*;
 public class MyCritter1 extends Critter {
 	private int lastFightTime = -1;
 	private int lastDir = 0;
-
+	
+	@Override
+	public Color viewFillColor() { 
+		return javafx.scene.paint.Color.RED; 
+	}
+	@Override
+	public CritterShape viewShape(){
+		return CritterShape.DIAMOND;
+	}
+	@Override
+	public Color viewOutlineColor() {
+		return javafx.scene.paint.Color.BLACK; 
+	}
+	
 	@Override
 	public void doTimeStep() {
 		int dir = Critter.getRandomInt(8);

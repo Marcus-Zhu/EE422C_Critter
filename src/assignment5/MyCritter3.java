@@ -11,6 +11,9 @@
  */
  package assignment5;
 
+import assignment5.Critter.CritterShape;
+import javafx.scene.paint.Color;
+
 /**
  * This Critter only runs in north, east, south, or west direction
  * @author Andrew Wong
@@ -19,6 +22,17 @@ public class MyCritter3 extends Critter{
 	
 	private int myDir = 0;
 	
+	@Override
+	public Color viewColor() { 
+		return javafx.scene.paint.Color.PINK; 
+	}
+	@Override
+	public CritterShape viewShape(){
+		return CritterShape.STAR;
+	}
+	public Color viewOutlineColor() {
+		return javafx.scene.paint.Color.BLUE; 
+	}
 	@Override
 	public void doTimeStep () {
 		run(myDir);

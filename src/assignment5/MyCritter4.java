@@ -11,6 +11,9 @@
  */
  package assignment5;
 
+import assignment5.Critter.CritterShape;
+import javafx.scene.paint.Color;
+
 /**
  * This Critter runs in random directions
  * @author Andrew Wong
@@ -18,6 +21,17 @@
 public class MyCritter4 extends Critter{
 	
 	private int myDir = 0;
+	
+	
+	@Override
+	public Color viewColor() { 
+		return javafx.scene.paint.Color.PURPLE; 
+	}
+	
+	@Override
+	public CritterShape viewShape(){
+		return CritterShape.CIRCLE;
+	}
 	
 	@Override
 	public void doTimeStep () {

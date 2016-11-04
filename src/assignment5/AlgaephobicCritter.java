@@ -1,11 +1,23 @@
 package assignment5;
 
+import assignment5.Critter.CritterShape;
+import javafx.scene.paint.Color;
+
 //import project5.Critter.CritterShape;
 
 public class AlgaephobicCritter extends Critter {
 
 	@Override
 	public String toString() { return "S"; }
+	
+	@Override
+	public CritterShape viewShape(){
+		return CritterShape.SQUARE;
+	}
+	@Override
+	public Color viewColor() { 
+		return javafx.scene.paint.Color.ORANGE; 
+	}
 
 //	public AlgaephobicCritter() {
 //		Params.look_energy_cost = 0;

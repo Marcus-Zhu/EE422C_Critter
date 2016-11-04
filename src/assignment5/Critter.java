@@ -52,17 +52,17 @@ public abstract class Critter {
 	 * need to, but please preserve that intent as you implement them. 
 	 */
 	public Color viewColor() { 
-		return javafx.scene.paint.Color.BLUE; 
+		return javafx.scene.paint.Color.WHITE; 
 	}
 	
 	public javafx.scene.paint.Color viewOutlineColor() { return viewColor(); }
 	public javafx.scene.paint.Color viewFillColor() { return viewColor(); }
 	
 	//TODO: OVERRIDE VIEWSHAPE IN CRITTER METHODS!!!
-	//public abstract CritterShape viewShape(); 
-	public CritterShape viewShape(){
+	public abstract CritterShape viewShape(); 
+	/*public CritterShape viewShape(){
 		return null;
-	}
+	}*/
 	
 	
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.

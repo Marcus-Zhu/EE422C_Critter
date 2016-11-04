@@ -11,6 +11,7 @@ import java.util.TimerTask;
 
 import org.reflections.Reflections;
 
+import assignment5.Critter.CritterShape;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -30,7 +31,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.*;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
@@ -273,7 +274,8 @@ public class Viewer extends Application {
 		int h = Params.world_height;
 		boardGroup.getChildren().clear();
 		boardGroup.getChildren().add(worldBoard);
-		List<Circle> critters = new ArrayList<Circle>();
+		//List<Circle> critters = new ArrayList<Circle>();
+		List<Shape> critters = new ArrayList<Shape>();
 		for (int i = 0; i < w; i++){
 			for (int j = 0; j < h; j++){
 				if (m.containsKey(new Point(i,j))){
@@ -288,8 +290,67 @@ public class Viewer extends Application {
 					double x = (worldX-worldPadding*2.0-s)*i/(w-1)+worldPadding;
 					double y = (worldY-worldPadding*2.0-s)*j/(h-1)+worldPadding;
 //					System.out.println(x+" "+y);
-					Circle a = new Circle(s);
-					a.setFill(crit.viewColor());
+					
+					// get shape specific to critter 
+					CritterShape switchShape = crit.viewShape();
+					Shape a = null;
+					// scale lengths (height, width) for square, triangle
+					double len = 1.7 * s;
+					
+					switch(switchShape){
+						case CIRCLE:
+							a = new Circle(s);
+							break;
+						case SQUARE:
+							// create a square
+							a = new Rectangle();
+							((Rectangle)a).setWidth(len);
+							((Rectangle)a).setHeight(len);
+							break;
+						case TRIANGLE:
+							// create a equilateral triangle
+							a = new Polygon();
+							// coordinates to create triangle
+							((Polygon)a).getPoints().addAll(new Double[]{
+								len/2, 0.0,
+								0.0, len,
+								len, len});
+							break;
+						case DIAMOND:
+							//create a rhombus
+							a = new Polygon();
+							double dlen = len*1.2;  //make diamonds appear larger
+							// coordinates to create rhombus
+							((Polygon)a).getPoints().addAll(new Double[]{
+								len/2, 0.0,
+								0.0, len/2,
+								len/2, len,
+								len, len/2});
+							break;
+						case STAR:
+							//create a 5-point star
+							a = new Polygon();
+							// coordinates to create star
+							((Polygon)a).getPoints().addAll(new Double[]{
+								0.5*len, 0.0,
+								0.3*len, 0.3*len,
+								0.0, 0.3 * len,
+								.25*len, .6*len,
+								.1*len, len,
+								0.5*len, 0.8*len,
+								0.9*len, len,
+								.75*len,.6*len,
+								len, .3*len,
+								.7*len, 0.3*len});
+							break;
+						default:
+							a = new Circle(s);
+							break;
+							 
+					}
+					
+					a.setFill(crit.viewFillColor());
+					a.setStroke(crit.viewOutlineColor());
 					critters.add(a);
 					// translate wrt top-left corner of circle
 					a.setTranslateX(x-s/2);

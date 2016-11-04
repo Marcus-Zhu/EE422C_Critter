@@ -14,6 +14,9 @@ package assignment5;
 
 import java.util.List;
 
+import assignment5.Critter.CritterShape;
+import javafx.scene.paint.Color;
+
 /**
  * This Critter tends to move along a certain direction and reluctant to reproduce.
  * @author Yilin Zhu
@@ -22,7 +25,20 @@ import java.util.List;
 public class MyCritter2 extends Critter {
 
 	private int mainDir = 0;
-
+	
+	@Override
+	public Color viewColor() { 
+		return javafx.scene.paint.Color.BLUE; 
+	}
+	@Override
+	public CritterShape viewShape(){
+		return CritterShape.TRIANGLE;
+	}
+	@Override
+	public Color viewOutlineColor() {
+		return javafx.scene.paint.Color.RED; 
+	}
+	
 	public MyCritter2(){
 		mainDir = Critter.getRandomInt(8);
 	}
