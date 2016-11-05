@@ -9,14 +9,15 @@ public class AlgaephobicCritter extends Critter {
 
 	@Override
 	public String toString() { return "S"; }
-	
+
 	@Override
 	public CritterShape viewShape(){
 		return CritterShape.SQUARE;
 	}
+
 	@Override
-	public Color viewColor() { 
-		return javafx.scene.paint.Color.ORANGE; 
+	public Color viewColor() {
+		return javafx.scene.paint.Color.web("#eb4d66");
 	}
 
 //	public AlgaephobicCritter() {

@@ -19,26 +19,23 @@ import javafx.scene.paint.Color;
  * @author Andrew Wong
  */
 public class MyCritter3 extends Critter{
-	
+
 	private int myDir = 0;
-	
+
 	@Override
-	public Color viewColor() { 
-		return javafx.scene.paint.Color.PINK; 
+	public Color viewColor() {
+		return javafx.scene.paint.Color.web("#ef8355");
 	}
 	@Override
 	public CritterShape viewShape(){
 		return CritterShape.STAR;
-	}
-	public Color viewOutlineColor() {
-		return javafx.scene.paint.Color.BLUE; 
 	}
 	@Override
 	public void doTimeStep () {
 		run(myDir);
 		myDir = (myDir + 2) % 8; // change cardinal direction each walk call, CCW.
 	}
-	
+
 	@Override
 	/**
 	 * Critter only fights when facing north or south
@@ -46,7 +43,7 @@ public class MyCritter3 extends Critter{
 	public boolean fight(String opp) {
 		return (myDir == 2 || myDir == 6);
 	}
-	
+
 	public String toString() {
 		return "3";
 	}

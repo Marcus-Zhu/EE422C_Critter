@@ -25,24 +25,20 @@ import javafx.scene.paint.Color;
 public class MyCritter2 extends Critter {
 
 	private int mainDir = 0;
-	
+
 	@Override
-	public Color viewColor() { 
-		return javafx.scene.paint.Color.BLUE; 
+	public Color viewColor() {
+		return javafx.scene.paint.Color.web("#3893b9");
 	}
 	@Override
 	public CritterShape viewShape(){
 		return CritterShape.TRIANGLE;
 	}
-	@Override
-	public Color viewOutlineColor() {
-		return javafx.scene.paint.Color.RED; 
-	}
-	
+
 	public MyCritter2(){
 		mainDir = Critter.getRandomInt(8);
 	}
-	
+
 	public MyCritter2(int dir){
 		mainDir = dir%8;
 	}
@@ -53,7 +49,7 @@ public class MyCritter2 extends Critter {
 		walk(dir);
 		if (getEnergy() > Params.min_reproduce_energy * 2){
 			MyCritter2 child = new MyCritter2(dir);
-			reproduce(child, (mainDir + 4) % 8);			
+			reproduce(child, (mainDir + 4) % 8);
 		}
 	}
 
@@ -62,7 +58,7 @@ public class MyCritter2 extends Critter {
 		run(mainDir);
 		return false;
 	}
-	
+
 	public static void runStats(List<Critter> mycritter2s) {
 		int total = mycritter2s.size();
 		int left = 0;
@@ -82,7 +78,7 @@ public class MyCritter2 extends Critter {
 		}
 		System.out.println();
 	}
-	
+
 	public String toString() {
 		return "2";
 	}

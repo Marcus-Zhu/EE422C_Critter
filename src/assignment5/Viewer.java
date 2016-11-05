@@ -62,6 +62,8 @@ public class Viewer extends Application {
 	Spinner<Integer> runSpin;
 	Button runBtn;
 	Separator sep5;
+	Button clearBtn;
+	Separator sep6;
 	Button quitBtn;
 	VBox controlPanel;
 	TextArea statConsoleArea;
@@ -74,7 +76,7 @@ public class Viewer extends Application {
 	public void start(Stage primaryStage) {
 		grid = new GridPane();
 		grid.getStyleClass().add("grid");
-//		grid.setPadding(new Insets(0, 0, 0, 0));
+		// grid.setPadding(new Insets(0, 0, 0, 0));
 
 		boardGroup = new StackPane();
 		boardGroup.setId("stack-pane");
@@ -82,9 +84,9 @@ public class Viewer extends Application {
 		worldBoard = new Rectangle(worldX, worldY);
 		worldBoard.setId("world-board");
 		boardGroup.getChildren().add(worldBoard);
-//		worldBoard.setX(300);
-//		worldBoard.setY(300);
-//	    StackPane.setMargin(worldBoard, new Insets(0, 0, 0, 0));
+		// worldBoard.setX(300);
+		// worldBoard.setY(300);
+		// StackPane.setMargin(worldBoard, new Insets(0, 0, 0, 0));
 		grid.add(boardGroup, 0, 0);
 
 		critterLbl = new Label("Critter World");
@@ -92,7 +94,7 @@ public class Viewer extends Application {
 		makeCbox.setId("make-combo");
 
 		makeSpin = new Spinner<Integer>(1, Integer.MAX_VALUE, 1);
-//		makeSpin.setEditable(true);
+		// makeSpin.setEditable(true);
 		makeSpin.setId("make-spin");
 		makeBtn = new Button("MAKE");
 		makeBox = new HBox();
@@ -112,6 +114,8 @@ public class Viewer extends Application {
 		runSpin = new Spinner<Integer>(1, Integer.MAX_VALUE, 1);
 		runBtn = new Button("RUN");
 		sep5 = new Separator();
+		clearBtn = new Button("CLEAR");
+		sep6 = new Separator();
 		quitBtn = new Button("QUIT");
 
 		controlPanel = new VBox();
@@ -132,6 +136,8 @@ public class Viewer extends Application {
 		controlPanel.getChildren().add(runSpin);
 		controlPanel.getChildren().add(runBtn);
 		controlPanel.getChildren().add(sep5);
+		controlPanel.getChildren().add(clearBtn);
+		controlPanel.getChildren().add(sep6);
 		controlPanel.getChildren().add(quitBtn);
 		grid.add(controlPanel, 1, 0);
 
@@ -147,13 +153,13 @@ public class Viewer extends Application {
 		Set<Class<? extends Critter>> subTypes = reflections.getSubTypesOf(Critter.class);
 		String s = new String();
 		validCritters = new ArrayList<String>();
-		for (Class<? extends Critter> item: subTypes){
+		for (Class<? extends Critter> item : subTypes) {
 			s = item.getName();
 			if (Controller.isCritter(s)) {
-				validCritters.add(s.substring(s.lastIndexOf('.')+1));
+				validCritters.add(s.substring(s.lastIndexOf('.') + 1));
 			}
 		}
-		myPackage = s.substring(0,s.lastIndexOf('.'));
+		myPackage = s.substring(0, s.lastIndexOf('.'));
 		Controller.clear();
 
 		Collections.sort(validCritters);
@@ -194,7 +200,7 @@ public class Viewer extends Application {
 			public void handle(ActionEvent e) {
 				stepSpin.setDisable(true);
 				int step = stepSpin.getValue();
-//				statConsoleArea.appendText("step " + step + '\n');
+				// statConsoleArea.appendText("step " + step + '\n');
 				Platform.runLater(new Runnable() {
 					public void run() {
 						draw(Controller.step(step));
@@ -254,6 +260,13 @@ public class Viewer extends Application {
 			}
 		});
 
+		clearBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				draw(Controller.clear());
+			}
+		});
+
 		quitBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -274,87 +287,77 @@ public class Viewer extends Application {
 		int h = Params.world_height;
 		boardGroup.getChildren().clear();
 		boardGroup.getChildren().add(worldBoard);
-		//List<Circle> critters = new ArrayList<Circle>();
 		List<Shape> critters = new ArrayList<Shape>();
-		for (int i = 0; i < w; i++){
-			for (int j = 0; j < h; j++){
-				if (m.containsKey(new Point(i,j))){
-					//============== Andrew's added code (delete if incorrect) =============
-					ArrayList<Critter> critArr = m.get(new Point(i,j));
-					Critter crit = null;
-					if (critArr.size() > 0 && critArr != null )
-						crit = critArr.get(critArr.size() - 1);
-					//======================================================================
-					double s = Math.min((worldX-worldPadding*2)/(w-1),
-							(worldY-worldPadding*2)/(h-1))/10;
-					double x = (worldX-worldPadding*2.0-s)*i/(w-1)+worldPadding;
-					double y = (worldY-worldPadding*2.0-s)*j/(h-1)+worldPadding;
-//					System.out.println(x+" "+y);
-					
-					// get shape specific to critter 
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				if (m.containsKey(new Point(i, j))) {
+					ArrayList<Critter> critArr = m.get(new Point(i, j));
+					if (critArr.isEmpty())
+						continue;
+					Critter crit = critArr.get(critArr.size() - 1);
+					double s = Math.min((worldX - worldPadding * 2) / (w - 1), (worldY - worldPadding * 2) / (h - 1))
+							/ 8;
+					double x = (worldX - worldPadding * 2.0 - s) * i / (w - 1) + worldPadding;
+					double y = (worldY - worldPadding * 2.0 - s) * j / (h - 1) + worldPadding;
+
+					// get shape specific to critter
 					CritterShape switchShape = crit.viewShape();
-					Shape a = null;
-					// scale lengths (height, width) for square, triangle
-					double len = 1.7 * s;
-					
-					switch(switchShape){
-						case CIRCLE:
-							a = new Circle(s);
-							break;
-						case SQUARE:
-							// create a square
-							a = new Rectangle();
-							((Rectangle)a).setWidth(len);
-							((Rectangle)a).setHeight(len);
-							break;
-						case TRIANGLE:
-							// create a equilateral triangle
-							a = new Polygon();
-							// coordinates to create triangle
-							((Polygon)a).getPoints().addAll(new Double[]{
-								len/2, 0.0,
-								0.0, len,
-								len, len});
-							break;
-						case DIAMOND:
-							//create a rhombus
-							a = new Polygon();
-							double dlen = len*1.2;  //make diamonds appear larger
-							// coordinates to create rhombus
-							((Polygon)a).getPoints().addAll(new Double[]{
-								len/2, 0.0,
-								0.0, len/2,
-								len/2, len,
-								len, len/2});
-							break;
-						case STAR:
-							//create a 5-point star
-							a = new Polygon();
-							// coordinates to create star
-							((Polygon)a).getPoints().addAll(new Double[]{
-								0.5*len, 0.0,
-								0.3*len, 0.3*len,
-								0.0, 0.3 * len,
-								.25*len, .6*len,
-								.1*len, len,
-								0.5*len, 0.8*len,
-								0.9*len, len,
-								.75*len,.6*len,
-								len, .3*len,
-								.7*len, 0.3*len});
-							break;
-						default:
-							a = new Circle(s);
-							break;
-							 
+					Shape a;
+
+					switch (switchShape) {
+					case CIRCLE:
+						a = new Circle(s);
+						break;
+					case SQUARE:
+						a = new Rectangle();
+						((Rectangle) a).setWidth(1.6 * s);
+						((Rectangle) a).setHeight(1.6 * s);
+						((Rectangle) a).setArcWidth(s/2);
+						((Rectangle) a).setArcHeight(s/2);
+						break;
+					case TRIANGLE:
+						// create a equilateral triangle
+						a = new Polygon();
+						// coordinates to create triangle
+						double len =  s/2*Math.sqrt(3);
+						((Polygon) a).getPoints().addAll(new Double[] { len,
+								0.0, 0.0, len*Math.sqrt(3), len*2, len*Math.sqrt(3)});
+						break;
+					case DIAMOND:
+						// create a rhombus
+						a = new Rectangle();
+						((Rectangle) a).setWidth(s * 1.6);
+						((Rectangle) a).setHeight(s * 1.6);
+						((Rectangle) a).setArcWidth(s/2);
+						((Rectangle) a).setArcHeight(s/2);
+						((Rectangle) a).setRotate(45);
+						break;
+					case STAR:
+						// create a 5-point star
+						a = new Polygon();
+						// coordinates to create star
+						Double[] coord = new Double[20];
+						double rho = 1.052;
+						double R = 0.402;
+						for (int k = 0; k < 5; k++){
+							coord[4*k] = s*rho*(Math.sin(72*k*Math.PI/180)+1);
+							coord[4*k+1] = s*rho*(-Math.cos(72*k*Math.PI/180)+1);
+							coord[4*k+2] = s*(R*Math.sin((72*k+36)*Math.PI/180)+rho);
+							coord[4*k+3] = s*(-R*Math.cos((72*k+36)*Math.PI/180)+rho);
+						}
+						((Polygon) a).getPoints().addAll(coord);
+						break;
+					default:
+						a = new Circle(s);
+						break;
+
 					}
-					
 					a.setFill(crit.viewFillColor());
 					a.setStroke(crit.viewOutlineColor());
 					critters.add(a);
 					// translate wrt top-left corner of circle
-					a.setTranslateX(x-s/2);
-					a.setTranslateY(y-s/2);
+					a.setTranslateX(x - s / 2);
+					a.setTranslateY(y - s / 2);
 				}
 			}
 		}

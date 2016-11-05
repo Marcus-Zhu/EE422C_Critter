@@ -13,8 +13,8 @@
 .grid{
   -fx-hgap: 10;
   -fx-vgap: 10;
-  -fx-padding: 0 10 0 0;
-  -fx-alignment: center-right;
+  -fx-padding: 20 10 10 20;
+  -fx-alignment: center;
   /*-fx-grid-lines-visible: true;*/
 }
 #stack-pane{
@@ -63,7 +63,7 @@
 }
 
 .separator{
-    -fx-padding: 6;
+    -fx-padding: 4;
 }
 .separator:horizontal .line {
     -fx-border-color: #EEEEEE transparent transparent transparent;
@@ -112,7 +112,7 @@
 }
 
 .text-area {
-    -fx-pref-height: 172;
+    -fx-pref-height: 86;
     -fx-font: bold 16 'Courier New';
 }
 /*

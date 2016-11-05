@@ -88,7 +88,7 @@ public class Controller {
 	public static String seed(long n) {
 		try {
 			Critter.setSeed(n);
-			return "seed " + n + " set.";
+			return "seed " + n + " set.\n";
 		} catch (NumberFormatException e) {
 			return "error processing: seed " + n + '\n';
 		}
