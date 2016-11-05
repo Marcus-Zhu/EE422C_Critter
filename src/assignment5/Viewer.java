@@ -1,3 +1,14 @@
+/* CRITTERS Viewer.java
+ * EE422C Project 5 submission by
+ * Yilin Zhu
+ * yz22778
+ * 16450
+ * Andrew Wong
+ * aw27772
+ * 16450
+ * Slip days used: <0>
+ * Fall 2016
+ */
 package assignment5;
 
 import java.awt.Point;
@@ -31,10 +42,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
-import javafx.scene.paint.Color;
 
 public class Viewer extends Application {
 	final int worldX = 650;

@@ -1,5 +1,5 @@
 /* CRITTERS MyCritter2.java
- * EE422C Project 4 submission by
+ * EE422C Project 5 submission by
  * Yilin Zhu
  * yz22778
  * 16450
@@ -13,8 +13,6 @@
 package assignment5;
 
 import java.util.List;
-
-import assignment5.Critter.CritterShape;
 import javafx.scene.paint.Color;
 
 /**
@@ -55,7 +53,10 @@ public class MyCritter2 extends Critter {
 
 	@Override
 	public boolean fight(String opp) {
-		run(mainDir);
+		if (look(mainDir, true) == null)
+			run(mainDir);
+		else if (look(mainDir, false) == null)
+			walk(mainDir);
 		return false;
 	}
 

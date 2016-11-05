@@ -1,6 +1,16 @@
+/* CRITTERS MyCritter5.java
+ * EE422C Project 5 submission by
+ * Yilin Zhu
+ * yz22778
+ * 16450
+ * Andrew Wong
+ * aw27772
+ * 16450
+ * Slip days used: <0>
+ * Fall 2016
+ */
 package assignment5;
 
-import assignment5.Critter.CritterShape;
 import assignment5.Critter.TestCritter;
 import javafx.scene.paint.Color;
 

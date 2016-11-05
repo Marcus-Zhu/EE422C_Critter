@@ -1,5 +1,5 @@
 package assignment5;
-import assignment5.Critter.CritterShape;
+
 import assignment5.Critter.TestCritter;
 import javafx.scene.paint.Color;
 

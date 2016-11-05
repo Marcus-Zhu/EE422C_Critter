@@ -1,5 +1,5 @@
 /* CRITTERS Critter.java
- * EE422C Project 4 submission by
+ * EE422C Project 5 submission by
  * Yilin Zhu
  * yz22778
  * 16450
@@ -25,12 +25,6 @@ import javafx.scene.paint.Color;
 
 
 public abstract class Critter {
-	private static String myPackage;
-	private static boolean DEBUG = false;
-	private	static List<Critter> population = new ArrayList<Critter>();
-	private static List<Critter> babies = new ArrayList<Critter>();
-	private static Map<Point, ArrayList<Critter>> map = new HashMap<Point, ArrayList<Critter>>();
-
 	/* NEW FOR PROJECT 5 */
 	public enum CritterShape {
 		CIRCLE,
@@ -60,6 +54,12 @@ public abstract class Critter {
 
 	public abstract CritterShape viewShape();
 
+
+	private static String myPackage;
+	private static boolean DEBUG = false;
+	private	static List<Critter> population = new ArrayList<Critter>();
+	private static List<Critter> babies = new ArrayList<Critter>();
+	private static Map<Point, ArrayList<Critter>> map = new HashMap<Point, ArrayList<Critter>>();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {

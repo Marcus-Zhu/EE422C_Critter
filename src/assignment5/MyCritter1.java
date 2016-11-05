@@ -1,5 +1,5 @@
 /* CRITTERS MyCritter1.java
- * EE422C Project 4 submission by
+ * EE422C Project 5 submission by
  * Yilin Zhu
  * yz22778
  * 16450
@@ -11,9 +11,8 @@
  */
  package assignment5;
 
-import java.util.*;
+import java.util.List;
 
-import assignment5.Critter.CritterShape;
 import javafx.scene.paint.Color;
 
 /**
@@ -40,7 +39,11 @@ public class MyCritter1 extends Critter {
 	public void doTimeStep() {
 		int dir = Critter.getRandomInt(8);
 		if (lastFightTime == Critter.timeStep - 1) {
-			run((lastDir + 4) % 8);
+			int newDir = (lastDir + 4) % 8;
+			if (look(newDir,true) == null)
+				run(newDir);
+			else
+				walk(newDir);
 		} else {
 			if (Critter.getRandomInt(4) == 0 || getEnergy() < 50)
 				walk(dir);
