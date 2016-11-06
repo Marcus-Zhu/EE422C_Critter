@@ -220,6 +220,7 @@ public abstract class Critter {
 			new_critter.energy = Params.start_energy;
 			new_critter.setX_coord(getRandomInt(Params.world_width));
 			new_critter.setY_coord(getRandomInt(Params.world_height));
+			//System.out.println("Critter: " + critter_class_name + "   X: " + new_critter.getX_coord() +", Y: " + new_critter.getY_coord());
 			population.add(new_critter);
 		}
 		catch (Exception e) {
